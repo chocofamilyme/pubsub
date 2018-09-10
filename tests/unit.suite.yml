@@ -7,12 +7,3 @@ modules:
   enabled:
   - Asserts
   - \Helper\Unit
-  - Phalcon
-  - AMQP:
-      host: 'localhost'
-      port: '5674'
-      username: 'guest'
-      password: 'guest'
-      vhost: '/'
-      queues: [test]
-      single_channel: true

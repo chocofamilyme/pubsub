@@ -22,7 +22,12 @@ class Event
     /** @var EventModel */
     private $model;
 
-    public function __construct(EventModel $model = null)
+    /**
+     * Event constructor.
+     *
+     * @param \Chocofamily\PubSub\Models\Event|null $model
+     */
+    public function __construct($model = null)
     {
         $this->model     = $model;
     }
@@ -46,9 +51,9 @@ class Event
     }
 
     /**
-     * @param EventModel $model
+     * @param \Chocofamily\PubSub\Models\Event $model
      */
-    public function setModel(EventModel $model)
+    public function setModel($model)
     {
         $this->model = $model;
     }
