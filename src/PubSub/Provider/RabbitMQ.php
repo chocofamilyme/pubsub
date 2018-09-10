@@ -6,12 +6,12 @@
 
 namespace Chocofamily\PubSub\Provider;
 
-use Chocofamily\PubSub\Repeater;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Wire\AMQPTable;
-use Chocofamily\PubSub\Cache;
+
+use Chocofamily\PubSub\Repeater;
 use Chocofamily\PubSub\Exceptions\RetryException;
 use Chocofamily\PubSub\Exceptions\ValidateException;
 use Chocofamily\PubSub\Provider\RabbitMQ\Message\Output as OutputMessage;
@@ -99,11 +99,11 @@ class RabbitMQ implements Adapter
     /**
      * @param array $config
      *
-     * @param Cache $cache
+     * @param Repeater $cache
      *
      * @return Adapter
      */
-    public static function getInstance(array $config, Cache $cache): Adapter
+    public static function getInstance(array $config, Repeater $cache): Adapter
     {
         if (empty(self::$instance)) {
             self::$instance = new self($config, $cache);

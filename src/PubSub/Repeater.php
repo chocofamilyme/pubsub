@@ -6,12 +6,14 @@
 
 namespace Chocofamily\PubSub;
 
+use \Phalcon\Cache\BackendInterface as Cache;
+
 class Repeater
 {
     const REDELIVERY_COUNT = 5;
     const CACHE_LIFETIME   = 1800;
 
-    /** @var Cache */
+    /** @var \Phalcon\Cache\BackendInterface */
     private $cache;
 
     public function __construct(Cache $cache)
@@ -36,7 +38,7 @@ class Repeater
 
         $redeliveryCount++;
 
-        $this->cache->set($key, $redeliveryCount, self::CACHE_LIFETIME);
+        $this->cache->save($key, $redeliveryCount, self::CACHE_LIFETIME);
 
         return ($redeliveryCount <= self::REDELIVERY_COUNT);
     }

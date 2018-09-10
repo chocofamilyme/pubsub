@@ -20,7 +20,7 @@ class RepeaterCest
         $message = new InputMessage(['app_id' => 45, 'message_id' => 885], []);
 
         $I->assertTrue($repeater->isRepeatable($message));
-        $cache->set($repeater->getCacheKey($message), 10, 5000);
+        $cache->save($repeater->getCacheKey($message), 10, 5000);
         $I->assertFalse($repeater->isRepeatable($message));
     }
 }
