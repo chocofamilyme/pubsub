@@ -7,6 +7,7 @@ modules:
   enabled:
   - Asserts
   - \Helper\Unit
+  - Phalcon
   - AMQP:
       host: 'localhost'
       port: '5674'

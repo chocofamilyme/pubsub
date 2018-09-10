@@ -51,14 +51,14 @@ class RabbitMQ implements Adapter
      *
      * @var bool
      */
-    private $durable = false;
+    private $durable = true;
 
     /**
      * Удаление exchange если нет подключений к нему
      *
      * @var bool
      */
-    private $auto_delete = true;
+    private $auto_delete = false;
 
     /** @var AMQPStreamConnection */
     private $connection;
