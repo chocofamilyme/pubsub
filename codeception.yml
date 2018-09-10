@@ -12,3 +12,13 @@ settings:
 extensions:
     enabled:
         - Codeception\Extension\RunFailed
+modules:
+    enabled:
+    - AMQP:
+        host: 'localhost'
+        port: '5674'
+        username: 'guest'
+        password: 'guest'
+        vhost: '/'
+        queues: [queue1, queue2]
+        single_channel: false
