@@ -6,6 +6,7 @@
 
 namespace Chocofamily\PubSub\Provider;
 
+use Chocofamily\PubSub\Repeater;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
@@ -71,7 +72,7 @@ class RabbitMQ implements Adapter
     private $exchanges = [];
     private $channels  = [];
 
-    private $cache;
+    private $repeater;
 
     /** @var OutputMessage */
     private $message;
@@ -85,14 +86,14 @@ class RabbitMQ implements Adapter
     /**
      * RabbitMQ constructor.
      *
-     * @param array $config
-     * @param Cache $cache
+     * @param array    $config
+     * @param Repeater $repeater
      */
-    private function __construct(array $config, Cache $cache)
+    private function __construct(array $config, Repeater $repeater)
     {
         $this->config = $config;
         $this->connect();
-        $this->cache = $cache;
+        $this->repeater = $repeater;
     }
 
     /**
@@ -249,12 +250,15 @@ class RabbitMQ implements Adapter
 
         $isNoAck = $this->getConfig('no_ack', false);
 
+        $message = new InputMessage($msg);
+
         try {
-            call_user_func($this->callback, new InputMessage($msg));
+            call_user_func($this->callback, $message);
 
         } catch (RetryException $e) {
             if ($isNoAck == false) {
-                $deliveryChannel->basic_reject($msg->delivery_info['delivery_tag'], $this->isRepeatable($msg));
+                $repeat = $this->repeater->isRepeatable($message);
+                $deliveryChannel->basic_reject($msg->delivery_info['delivery_tag'], $repeat);
 
                 return;
             }
@@ -268,30 +272,6 @@ class RabbitMQ implements Adapter
             $deliveryChannel->basic_ack($msg->delivery_info['delivery_tag']);
         }
     }
-
-
-    /**
-     * @param AMQPMessage $msg
-     *
-     * @return bool
-     */
-    private function isRepeatable(AMQPMessage $msg): bool
-    {
-        $key = 'ev_'.$msg->get('app_id').'_'.$msg->get('message_id');
-
-        $redeliveryCount = $this->cache->get($key);
-
-        if (empty($redeliveryCount)) {
-            $redeliveryCount = 1;
-        }
-
-        $redeliveryCount++;
-
-        $this->cache->set($key, $redeliveryCount, self::CACHE_LIFETIME);
-
-        return ($redeliveryCount <= self::REDELIVERY_COUNT);
-    }
-
 
     /**
      * @param string $queue
