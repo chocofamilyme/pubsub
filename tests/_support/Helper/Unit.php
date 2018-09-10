@@ -27,13 +27,14 @@ class Unit extends \Codeception\Module
     /**
      * @param $object
      * @param $propertyName
+     * @param $value
      *
      * @throws \ReflectionException
      */
-    public function invokeProperty(&$object, $propertyName)
+    public function invokeProperty(&$object, $propertyName, $value)
     {
-        $reflection = new \ReflectionClass(get_class($object));
-        $method = $reflection->getProperty($propertyName);
-        $method->setAccessible(true);
+        $reflection = new \ReflectionProperty(get_class($object), $propertyName);
+        $reflection->setAccessible(true);
+        $reflection->setValue($object, $value);
     }
 }

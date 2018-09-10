@@ -22,7 +22,7 @@ class Input implements Message
 
     public function getHeader(string $key = '')
     {
-        return $this->headers;
+        return isset($this->headers[$key]) ? $this->headers[$key] : $this->headers;
     }
 
     public function getPayload()
