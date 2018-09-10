@@ -27,7 +27,8 @@ class EventObjectSerializer implements SerializerInterface
      *
      * @return mixed
      */
-    public function getAttributes($model) {
+    public function getAttributes($model)
+    {
         return array_merge($this->customData, $model->toArray(static::FIELDS));
     }
 }

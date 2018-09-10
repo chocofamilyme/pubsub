@@ -50,14 +50,14 @@ class RabbitMQ implements Adapter
      *
      * @var bool
      */
-    private $durable = true;
+    private $durable = false;
 
     /**
      * Удаление exchange если нет подключений к нему
      *
      * @var bool
      */
-    private $auto_delete = false;
+    private $auto_delete = true;
 
     /** @var AMQPStreamConnection */
     private $connection;
@@ -118,9 +118,12 @@ class RabbitMQ implements Adapter
 
     public function connect()
     {
-        $this->connection =
-            new AMQPStreamConnection($this->config['host'], $this->config['port'], $this->config['user'],
-                $this->config['password']);
+        $this->connection = new AMQPStreamConnection(
+            $this->config['host'],
+            $this->config['port'],
+            $this->config['user'],
+            $this->config['password']
+        );
 
         $this->isConnected = true;
     }
@@ -145,8 +148,11 @@ class RabbitMQ implements Adapter
     {
         $this->exchangeDeclare();
 
-        $this->currentChannel->basic_publish($this->message->getPayload(), $this->currentExchange->getName(),
-            $this->currentExchange->getRoute());
+        $this->currentChannel->basic_publish(
+            $this->message->getPayload(),
+            $this->currentExchange->getName(),
+            $this->currentExchange->getRoute()
+        );
     }
 
 
@@ -170,16 +176,37 @@ class RabbitMQ implements Adapter
         $this->config = array_merge($params, $this->config);
 
         $queueName =
-            $this->currentChannel->queue_declare($params['queue_name'], false, $this->getConfig('durable', true), false,
-                false, false, new AMQPTable($this->getConfig('queue', [])));
+            $this->currentChannel->queue_declare(
+                $params['queue_name'],
+                false,
+                $this->getConfig('durable', true),
+                false,
+                false,
+                false,
+                new AMQPTable($this->getConfig('queue', []))
+            );
 
-        $this->currentChannel->queue_bind($queueName[0], $this->currentExchange->getName(),
-            $this->currentExchange->getRoute());
+        $this->currentChannel->queue_bind(
+            $queueName[0],
+            $this->currentExchange->getName(),
+            $this->currentExchange->getRoute()
+        );
 
-        $this->currentChannel->basic_qos(null, $this->getConfig('prefetch_count', 1), null);
+        $this->currentChannel->basic_qos(
+            null,
+            $this->getConfig('prefetch_count', 1),
+            null
+        );
 
-        $this->currentChannel->basic_consume($queueName[0], $consumerTag, false, false, false, false,
-            [$this, 'callbackWrapper']);
+        $this->currentChannel->basic_consume(
+            $queueName[0],
+            $consumerTag,
+            false,
+            false,
+            false,
+            false,
+            [$this, 'callbackWrapper']
+        );
 
         $this->callback = $callback;
 
@@ -198,8 +225,13 @@ class RabbitMQ implements Adapter
 
         if (isset($this->exchanges[$key]) == false) {
             $this->channels[$key] = $this->connection->channel();
-            $this->channels[$key]->exchange_declare($this->currentExchange->getName(), $this->type, $this->passive,
-                $this->durable, $this->auto_delete);
+            $this->channels[$key]->exchange_declare(
+                $this->currentExchange->getName(),
+                $this->type,
+                $this->passive,
+                $this->durable,
+                $this->auto_delete
+            );
             $this->exchanges[$this->currentExchange->getName()] = true;
         }
 
