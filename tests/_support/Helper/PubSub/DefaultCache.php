@@ -4,7 +4,7 @@
  * @author  docxplusgmoon <nurgabylov.d@chocolife.kz>
  */
 
-namespace Helper;
+namespace Helper\PubSub;
 
 use Chocofamily\PubSub\Cache;
 

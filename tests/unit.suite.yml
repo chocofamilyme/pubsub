@@ -4,6 +4,14 @@
 
 actor: UnitTester
 modules:
-    enabled:
-        - Asserts
-        - \Helper\Unit
+  enabled:
+  - Asserts
+  - \Helper\Unit
+  - AMQP:
+      host: 'localhost'
+      port: '5674'
+      username: 'guest'
+      password: 'guest'
+      vhost: '/'
+      queues: [test]
+      single_channel: true

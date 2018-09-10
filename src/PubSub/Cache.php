@@ -6,7 +6,6 @@
 
 namespace Chocofamily\PubSub;
 
-
 interface Cache
 {
     public function get(string $key);
