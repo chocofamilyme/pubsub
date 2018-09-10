@@ -2,7 +2,6 @@
   "name": "chocofamilyme/pubsub",
   "description": "Библиотека для реализаций паттерна Pub/Sub",
   "keywords": [
-    "pub/sub",
     "pubsub",
     "phalcon",
     "events",
