@@ -6,7 +6,7 @@
 
 namespace Chocofamily\PubSub;
 
-class EventObjectSerializer implements SerializerInterface
+class ObjectSerializer implements SerializerInterface
 {
     const FIELDS = [];
 
