@@ -7,23 +7,21 @@
 namespace Unit;
 
 use Chocofamily\PubSub\Subscriber;
-use Codeception\Stub;
 use Helper\PubSub\DefaultProvider;
+use Helper\PubSub\Message\Input as InputMessage;
 
 class SubscriberCest
 {
-    public function _before(\UnitTester $I)
-    {
-    }
-
-    public function _after(\UnitTester $I)
-    {
-    }
-
-    // tests
     public function tryToCallback(\UnitTester $I, \Helper\Unit $helper)
     {
         $I->wantTo("Subscriber callback test");
+
+        $headers = [
+            'correlation_id' => '2679bb181c99887e0662ff8465c66a4f',
+            'app_id'         => 'service.app.com',
+            'message_id'     => 1599,
+            'span_id'        => 0,
+        ];
 
         $payload = [
             'event_id' => 1599,
@@ -31,20 +29,16 @@ class SubscriberCest
             'name'     => 'docx',
         ];
 
-        $headers = [
-            'correlation_id' => '2679bb181c99887e0662ff8465c66a4f',
-            'app_id' => 'service.app.com',
-            'message_id' => 1599,
-        ];
+        $message = new InputMessage($headers, $payload);
 
         $provider = new DefaultProvider();
-        $subscriber = Stub::make(Subscriber::class, [$provider, 'order.created']);
-        $helper->invokeProperty($subscriber, 'callback');
-
-        $subscriber->callback = function (array $body, array $headers) use ($I) {
-            echo get_class($I);
-            echo print_r($headers) . PHP_EOL . print_r($body) . "\n";
+        $callback = function (array $inHeaders, array $inPayload) use ($I, $headers, $payload) {
+            $I->assertEquals($headers, $inHeaders);
+            $I->assertEquals($payload, $inPayload);
         };
+
+        $subscriber = new Subscriber($provider, 'order.created');
+        $helper->invokeProperty($subscriber, 'callback', $callback);
 
         $subscriber->callback($message);
     }

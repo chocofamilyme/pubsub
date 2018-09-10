@@ -6,6 +6,7 @@
 
 namespace Chocofamily\PubSub\Provider;
 
+use Chocofamily\PubSub\Repeater;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
@@ -50,14 +51,14 @@ class RabbitMQ implements Adapter
      *
      * @var bool
      */
-    private $durable = true;
+    private $durable = false;
 
     /**
      * Удаление exchange если нет подключений к нему
      *
      * @var bool
      */
-    private $auto_delete = false;
+    private $auto_delete = true;
 
     /** @var AMQPStreamConnection */
     private $connection;
@@ -71,7 +72,7 @@ class RabbitMQ implements Adapter
     private $exchanges = [];
     private $channels  = [];
 
-    private $cache;
+    private $repeater;
 
     /** @var OutputMessage */
     private $message;
@@ -85,14 +86,14 @@ class RabbitMQ implements Adapter
     /**
      * RabbitMQ constructor.
      *
-     * @param array $config
-     * @param Cache $cache
+     * @param array    $config
+     * @param Repeater $repeater
      */
-    private function __construct(array $config, Cache $cache)
+    private function __construct(array $config, Repeater $repeater)
     {
         $this->config = $config;
         $this->connect();
-        $this->cache = $cache;
+        $this->repeater = $repeater;
     }
 
     /**
@@ -118,9 +119,12 @@ class RabbitMQ implements Adapter
 
     public function connect()
     {
-        $this->connection =
-            new AMQPStreamConnection($this->config['host'], $this->config['port'], $this->config['user'],
-                $this->config['password']);
+        $this->connection = new AMQPStreamConnection(
+            $this->config['host'],
+            $this->config['port'],
+            $this->config['user'],
+            $this->config['password']
+        );
 
         $this->isConnected = true;
     }
@@ -145,8 +149,11 @@ class RabbitMQ implements Adapter
     {
         $this->exchangeDeclare();
 
-        $this->currentChannel->basic_publish($this->message->getPayload(), $this->currentExchange->getName(),
-            $this->currentExchange->getRoute());
+        $this->currentChannel->basic_publish(
+            $this->message->getPayload(),
+            $this->currentExchange->getName(),
+            $this->currentExchange->getRoute()
+        );
     }
 
 
@@ -170,16 +177,37 @@ class RabbitMQ implements Adapter
         $this->config = array_merge($params, $this->config);
 
         $queueName =
-            $this->currentChannel->queue_declare($params['queue_name'], false, $this->getConfig('durable', true), false,
-                false, false, new AMQPTable($this->getConfig('queue', [])));
+            $this->currentChannel->queue_declare(
+                $params['queue_name'],
+                false,
+                $this->getConfig('durable', true),
+                false,
+                false,
+                false,
+                new AMQPTable($this->getConfig('queue', []))
+            );
 
-        $this->currentChannel->queue_bind($queueName[0], $this->currentExchange->getName(),
-            $this->currentExchange->getRoute());
+        $this->currentChannel->queue_bind(
+            $queueName[0],
+            $this->currentExchange->getName(),
+            $this->currentExchange->getRoute()
+        );
 
-        $this->currentChannel->basic_qos(null, $this->getConfig('prefetch_count', 1), null);
+        $this->currentChannel->basic_qos(
+            null,
+            $this->getConfig('prefetch_count', 1),
+            null
+        );
 
-        $this->currentChannel->basic_consume($queueName[0], $consumerTag, false, false, false, false,
-            [$this, 'callbackWrapper']);
+        $this->currentChannel->basic_consume(
+            $queueName[0],
+            $consumerTag,
+            false,
+            false,
+            false,
+            false,
+            [$this, 'callbackWrapper']
+        );
 
         $this->callback = $callback;
 
@@ -198,8 +226,13 @@ class RabbitMQ implements Adapter
 
         if (isset($this->exchanges[$key]) == false) {
             $this->channels[$key] = $this->connection->channel();
-            $this->channels[$key]->exchange_declare($this->currentExchange->getName(), $this->type, $this->passive,
-                $this->durable, $this->auto_delete);
+            $this->channels[$key]->exchange_declare(
+                $this->currentExchange->getName(),
+                $this->type,
+                $this->passive,
+                $this->durable,
+                $this->auto_delete
+            );
             $this->exchanges[$this->currentExchange->getName()] = true;
         }
 
@@ -217,12 +250,15 @@ class RabbitMQ implements Adapter
 
         $isNoAck = $this->getConfig('no_ack', false);
 
+        $message = new InputMessage($msg);
+
         try {
-            call_user_func($this->callback, new InputMessage($msg));
+            call_user_func($this->callback, $message);
 
         } catch (RetryException $e) {
             if ($isNoAck == false) {
-                $deliveryChannel->basic_reject($msg->delivery_info['delivery_tag'], $this->isRepeatable($msg));
+                $repeat = $this->repeater->isRepeatable($message);
+                $deliveryChannel->basic_reject($msg->delivery_info['delivery_tag'], $repeat);
 
                 return;
             }
@@ -236,30 +272,6 @@ class RabbitMQ implements Adapter
             $deliveryChannel->basic_ack($msg->delivery_info['delivery_tag']);
         }
     }
-
-
-    /**
-     * @param AMQPMessage $msg
-     *
-     * @return bool
-     */
-    private function isRepeatable(AMQPMessage $msg): bool
-    {
-        $key = 'ev_'.$msg->get('app_id').'_'.$msg->get('message_id');
-
-        $redeliveryCount = $this->cache->get($key);
-
-        if (empty($redeliveryCount)) {
-            $redeliveryCount = 1;
-        }
-
-        $redeliveryCount++;
-
-        $this->cache->set($key, $redeliveryCount, self::CACHE_LIFETIME);
-
-        return ($redeliveryCount <= self::REDELIVERY_COUNT);
-    }
-
 
     /**
      * @param string $queue
