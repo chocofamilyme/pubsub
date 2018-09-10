@@ -2,7 +2,7 @@
 
 namespace Unit\Pub\Event;
 
-use Chocofamily\PubSub\Models\Event;
+use Helper\PubSub\Models\Event;
 use Chocofamily\PubSub\Services\EventPublish;
 use Helper\PubSub\DefaultProvider;
 
@@ -27,13 +27,12 @@ class PublisherCest
             'text' => 'Hello',
         ];
 
+
         $eventPublish = new EventPublish($provider, $event);
 
         $eventPublish->publish('test.queue');
 
-
-        codecept_debug($provider->queue);
-
-        // $I->assertEquals($provider->queue['test.queue']['message'], '{"event_id":1,"text":"Hello"}');
+        $I->assertEquals($provider->queue['test.queue']['message'], '{"event_id":1,"id":1,"text":"Hello"}');
+        $I->assertEquals($event->getStatus(), Event::SENT);
     }
 }
