@@ -8,6 +8,7 @@ namespace Chocofamily\PubSub\Services;
 
 use Chocofamily\PubSub\Publisher;
 use \Chocofamily\PubSub\Models\Event as EventModel;
+use \Chocofamily\PubSub\Services\Event as EventService;
 
 /**
  * Class Event
@@ -25,7 +26,7 @@ class EventPublish
     public function __construct($eventSource, EventModel $model = null)
     {
         if ($model) {
-            $this->event = new Event($model);
+            $this->event = new EventService($model);
         }
 
         $this->publisher = new Publisher($eventSource);
@@ -37,7 +38,7 @@ class EventPublish
      */
     public function setModel(EventModel $model)
     {
-        $this->event = new Event($model);
+        $this->event = new EventService($model);
     }
 
     /**

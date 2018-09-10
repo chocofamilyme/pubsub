@@ -42,4 +42,9 @@ class Publisher
     {
         $this->headers = array_merge($headers, $this->headers);
     }
+
+    public function getHeader(): array
+    {
+        return $this->headers;
+    }
 }

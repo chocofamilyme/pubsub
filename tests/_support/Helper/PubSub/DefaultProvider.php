@@ -8,8 +8,26 @@ namespace Helper\PubSub;
 
 use Chocofamily\PubSub\Provider\Adapter;
 
+/**
+ * Class DefaultProvider
+ *
+ * @package Helper\PubSub
+ */
 class DefaultProvider implements Adapter
 {
+    public $queue    = [];
+    public $exchange = '';
+
+    /**
+     * @var string
+     */
+    public $message = '';
+
+    /**
+     * @var array
+     */
+    public $headers = [];
+
     public function connect()
     {
     }
@@ -20,6 +38,12 @@ class DefaultProvider implements Adapter
 
     public function publish()
     {
+        $data = [
+            'message' => $this->message,
+            'headers' => $this->headers,
+        ];
+
+        $this->queue[$this->exchange] = $data;
     }
 
     public function subscribe($callback, array $params = [], string $consumerTag = '')
@@ -28,9 +52,11 @@ class DefaultProvider implements Adapter
 
     public function setMessage(array $message, array $headers = [])
     {
+        $this->message = \json_encode($message, JSON_UNESCAPED_UNICODE);
     }
 
     public function setCurrentExchange(string $queue)
     {
+        $this->exchange = $queue;
     }
 }
