@@ -20,7 +20,10 @@ class PublisherCest
 
         $I->declareExchange(
             'test', // exchange name
-            'topic' // exchange type
+            'topic', // exchange type
+            false,
+            true,
+            false
         );
 
         $I->declareQueue(
@@ -44,7 +47,7 @@ class PublisherCest
 
         $message = $I->grabMessageFromQueue('test');
 
-        codecept_debug($message);
+        codecept_debug($message->body);
 
         $I->purgeQueue('test');
     }
