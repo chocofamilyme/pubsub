@@ -101,7 +101,7 @@ $subscriber->subscribe(function ($headers, $body) {
 
 #### Публикация используя транзакции БД
 Этот способ необходим для атомарности сохранения сущности в БД и публикования события. Следующая картинка хорошо иллюстрирует как это работает:
-![alt text](https://preview.ibb.co/eVGsx9/richardson_microservices_part5_local_transaction_e1449165852332.png)
+![alt text](https://image.ibb.co/nvznx9/richardson_microservices_part5_local_transaction_e1449165852332.jpg)
 
 
 @todo
