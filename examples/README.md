@@ -14,9 +14,9 @@ OK
 Array
 (
     [delivery_mode] => 2
-    [correlation_id] => e8a1ace08d3da94a9249907d9b585145
+    [correlation_id] => da2b9f5443a49539c74d54931aef6741
     [message_id] => 11995
-    [app_id] => 
+    [app_id] => service.example.com
     [span_id] => 1
 )
 
