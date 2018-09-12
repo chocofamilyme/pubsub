@@ -79,9 +79,29 @@ $routeKey = 'order.created';
 
 $publisher->send($payload, $routeKey);
 ````
-Для RabbitMQ переменная `$routeKey` должна состоять минимум из двух частей разделенных точкой `.`. Пример `order.created`. Имя Exchange будет содержать первый блок, т.е. `order`.
+Для RabbitMQ переменная `$routeKey` должна состоять минимум из двух частей разделенных точкой `.`. Пример `order.created`. Имя Exchange будет содержать первый блок, т.е. `order`. После этого если зайдете в админку rabbitmq должен создаться exchange с именем `order`.
 
+#### Подписка на событие
+Для подписки на события используется класс `Chocofamily\PubSub\Subscriber`. Минимальный рабочий пример:
 
+````php
+$params = [
+    'queue_name' => 'restapi_orderx',
+];
+
+$taskName = 'your_task_name';
+
+$subscriber = new Subscriber($di->getShared('eventsource'), 'order.created.*', $params, $taskName);
+
+$subscriber->subscribe(function ($headers, $body) {
+    echo print_r($headers, 1). PHP_EOL;
+    echo print_r($body, 1). PHP_EOL;
+});
+````
+
+#### Публикация используя транзакции БД
+Этот способ необходим для атомарности сохранения сущности в БД и публикования события. Следующая картинка хорошо иллюстрирует как это работает:
+![alt text](https://preview.ibb.co/eVGsx9/richardson_microservices_part5_local_transaction_e1449165852332.png)
 
 
 @todo
