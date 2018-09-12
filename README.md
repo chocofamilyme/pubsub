@@ -99,9 +99,62 @@ $subscriber->subscribe(function ($headers, $body) {
 });
 ````
 
+Чтобы обратно отправить сообщение в очередь необходимо в кэлбэк функции кинуть исключение `Chocofamily\PubSub\Exceptions\RetryException`. Сообщение может максимум 5 раз обработаться повторно, после этого он попадает в очередь мертвых сообщений (exchange = DLX). 
+
+
 #### Публикация используя транзакции БД
 Этот способ необходим для атомарности сохранения сущности в БД и публикования события. Следующая картинка хорошо иллюстрирует как это работает:
 ![alt text](https://image.ibb.co/nvznx9/richardson_microservices_part5_local_transaction_e1449165852332.jpg)
+
+Для этого необходимо созлать таблицу events:
+
+````sql
+create table events
+(
+	id serial not null
+		constraint events_pkey
+			primary key,
+	type smallint not null,
+	payload json not null,
+	status smallint not null,
+	model_id integer not null,
+	created_at timestamp default now() not null,
+	updated_at timestamp
+);
+````
+
+
+Пример использования:
+````php
+use Chocofamily\PubSub\Services\EventPrepare;
+
+...
+
+$order = new Order([
+    'user_id' => 11166541,
+    'status'  => 0,
+    'total'   => 5852,
+]);
+
+$eventSource = $di->get('eventsource');
+
+$event = new EventPrepare($order, new OrderSerialize(['name' => 'docx']), 1);
+$event->up($eventSource, 'order.created.-5');
+	
+````
+
+Метод `up` работает так
+- db transaction start
+- order->save();
+- eventModel->save()
+- db transaction commit
+- event publish
+
+
+
+
+
+
 
 
 @todo
