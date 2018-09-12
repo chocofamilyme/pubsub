@@ -32,6 +32,7 @@ function getProvider()
         'port'     => 5674,
         'user'     => 'guest',
         'password' => 'guest',
+        'app_id'   => 'service.example.com',
     ];
 
     $cache = getCacheInstance();
