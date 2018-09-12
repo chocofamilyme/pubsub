@@ -1,0 +1,5 @@
+{
+  "require": {
+    "chocofamilyme/pubsub": "0.0.*"
+  }
+}
