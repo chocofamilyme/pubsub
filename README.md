@@ -106,7 +106,7 @@ $subscriber->subscribe(function ($headers, $body) {
 Этот способ необходим для атомарности сохранения сущности в БД и публикования события. Следующая картинка хорошо иллюстрирует как это работает:
 ![alt text](https://image.ibb.co/nvznx9/richardson_microservices_part5_local_transaction_e1449165852332.jpg)
 
-Для этого необходимо созлать таблицу events:
+Для этого необходимо создать таблицу events:
 
 ````sql
 create table events
