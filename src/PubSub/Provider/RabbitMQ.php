@@ -28,6 +28,7 @@ class RabbitMQ implements Adapter
 {
     const REDELIVERY_COUNT = 5;
     const CACHE_LIFETIME   = 1800;
+    const DEFAULT_EXCHANGE_TYPE = 'topic';
 
     private static $instance;
 
@@ -172,9 +173,9 @@ class RabbitMQ implements Adapter
             throw new ValidateException('Имя очереди обязательный параметр');
         }
 
-        $this->exchangeDeclare();
-
         $this->config = array_merge($params, $this->config);
+
+        $this->exchangeDeclare();
 
         $queueName =
             $this->currentChannel->queue_declare(
@@ -228,7 +229,7 @@ class RabbitMQ implements Adapter
             $this->channels[$key] = $this->connection->channel();
             $this->channels[$key]->exchange_declare(
                 $this->currentExchange->getName(),
-                $this->type,
+                $this->getConfig('exchange_type', self::DEFAULT_EXCHANGE_TYPE),
                 $this->passive,
                 $this->durable,
                 $this->auto_delete
