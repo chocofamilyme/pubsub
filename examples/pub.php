@@ -7,7 +7,7 @@ use Chocofamily\PubSub\Publisher;
 $publisher = new Publisher(getProvider());
 
 $payload = [
-    'event_id' => 11995,
+    'event_id' => rand(10000, 100000),
     'name' => 'docx',
     'age' => 25
 ];
