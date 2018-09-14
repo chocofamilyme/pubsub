@@ -11,7 +11,7 @@ use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Wire\AMQPTable;
 
-use Chocofamily\PubSub\Repeater;
+use Chocofamily\PubSub\RepeaterInterface;
 use Chocofamily\PubSub\Exceptions\RetryException;
 use Chocofamily\PubSub\Exceptions\ValidateException;
 use Chocofamily\PubSub\Provider\RabbitMQ\Message\Output as OutputMessage;
@@ -88,9 +88,9 @@ class RabbitMQ implements Adapter
      * RabbitMQ constructor.
      *
      * @param array    $config
-     * @param Repeater $repeater
+     * @param RepeaterInterface $repeater
      */
-    private function __construct(array $config, Repeater $repeater)
+    private function __construct(array $config, RepeaterInterface $repeater)
     {
         $this->config = $config;
         $this->connect();
@@ -100,14 +100,14 @@ class RabbitMQ implements Adapter
     /**
      * @param array $config
      *
-     * @param Repeater $cache
+     * @param RepeaterInterface $repeater
      *
      * @return Adapter
      */
-    public static function getInstance(array $config, Repeater $cache): Adapter
+    public static function getInstance(array $config, RepeaterInterface $repeater): Adapter
     {
         if (empty(self::$instance)) {
-            self::$instance = new self($config, $cache);
+            self::$instance = new self($config, $repeater);
         }
 
         return self::$instance;

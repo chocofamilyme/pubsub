@@ -8,7 +8,7 @@ namespace Chocofamily\PubSub;
 
 use \Phalcon\Cache\BackendInterface as Cache;
 
-class Repeater
+class Repeater implements RepeaterInterface
 {
     const REDELIVERY_COUNT = 5;
     const CACHE_LIFETIME   = 1800;
