@@ -6,6 +6,7 @@
 
 namespace Chocofamily\PubSub\Services;
 
+use Chocofamily\PubSub\Exceptions\ValidateException;
 use Phalcon\Mvc\Model\Transaction\Manager as TxManager;
 
 use Chocofamily\PubSub\Models\Event as EventModel;
@@ -58,6 +59,7 @@ class EventPrepare
      * Создать запись о событии
      *
      * @return EventModel
+     * @throws ValidateException
      */
     public function create()
     {
@@ -68,7 +70,8 @@ class EventPrepare
 
         if ($this->model->save() === false) {
             $messages = $this->model->getMessages();
-            $transaction->rollback($messages[0]->getMessage());
+            $transaction->rollback();
+            throw new ValidateException($messages[0]->getMessage());
         }
         $this->model->refresh();
 
@@ -84,7 +87,8 @@ class EventPrepare
 
         if ($eventModel->save() === false) {
             $messages = $eventModel->getMessages();
-            $transaction->rollback($messages[0]->getMessage());
+            $transaction->rollback();
+            throw new ValidateException($messages[0]->getMessage());
         }
 
         $transaction->commit();
