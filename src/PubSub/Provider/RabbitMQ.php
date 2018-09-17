@@ -243,6 +243,8 @@ class RabbitMQ implements Adapter
 
     /**
      * @param AMQPMessage $msg
+     *
+     * @throws \Exception
      */
     public function callbackWrapper(AMQPMessage $msg)
     {
@@ -266,7 +268,7 @@ class RabbitMQ implements Adapter
         } catch (\Exception $e) {
             $deliveryChannel->basic_reject($msg->delivery_info['delivery_tag'], false);
 
-            return;
+            throw $e;
         }
 
         if ($isNoAck == false) {
