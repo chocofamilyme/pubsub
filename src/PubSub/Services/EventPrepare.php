@@ -70,8 +70,7 @@ class EventPrepare
 
         if ($this->model->save() === false) {
             $messages = $this->model->getMessages();
-            $transaction->rollback();
-            throw new ValidateException($messages[0]->getMessage());
+            $transaction->rollback($messages[0]->getMessage());
         }
         $this->model->refresh();
 
@@ -87,8 +86,7 @@ class EventPrepare
 
         if ($eventModel->save() === false) {
             $messages = $eventModel->getMessages();
-            $transaction->rollback();
-            throw new ValidateException($messages[0]->getMessage());
+            $transaction->rollback($messages[0]->getMessage());
         }
 
         $transaction->commit();
