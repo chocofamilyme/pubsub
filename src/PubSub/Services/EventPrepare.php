@@ -93,6 +93,9 @@ class EventPrepare
 
         $eventModel->refresh();
 
+        //TODO с версии Phalcon 3.4 afterFetch вызывается автоматически
+        $eventModel->afterFetch();
+
         return $eventModel;
     }
 }
