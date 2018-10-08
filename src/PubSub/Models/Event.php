@@ -31,7 +31,7 @@ class Event extends \Phalcon\Mvc\Model
     /**
      * @var array
      */
-    public $payload;
+    public $payload = [];
 
     /**
      * @var integer
@@ -108,9 +108,11 @@ class Event extends \Phalcon\Mvc\Model
      */
     private function decodePayload()
     {
-        $this->payload = \json_decode($this->payload, true);
-        if (is_null($this->payload)) {
-            $this->payload = [];
+        if (is_string($this->payload)) {
+            $this->payload = \json_decode($this->payload, true);
+            if (is_null($this->payload)) {
+                $this->payload = [];
+            }
         }
     }
 
@@ -119,7 +121,9 @@ class Event extends \Phalcon\Mvc\Model
      */
     private function encodePayload()
     {
-        $this->payload = \json_encode($this->payload, JSON_UNESCAPED_UNICODE);
+        if (is_array($this->payload)) {
+            $this->payload = \json_encode($this->payload, JSON_UNESCAPED_UNICODE);
+        }
     }
 
     /**
