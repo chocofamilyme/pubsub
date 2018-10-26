@@ -75,19 +75,22 @@ class Event
 
     /**
      * Не отправленные события
-     * @param \DateTime $from
      *
-     * @return EventModel[]
+     * @param \DateTime        $from
+     * @param int              $limit
+     *
+     * @return \stdClass
      */
-    public static function getFailMessage(\DateTime $from): array
-    {
-        $events = EventModel::find('status = :no_send: AND create_at > :start_at:', [
-            'bind' => [
-                'no_send'  => EventModel::NEW,
-                'start_at' => $from->format('Y-m-d H:i:s'),
-            ],
+    public static function getFailMessage(
+        \DateTime $from,
+        int $limit = 200
+    ) {
+        return EventModel::find([
+            'status = :no_send: AND created_at > :start_at:',
+            'no_send'  => EventModel::NEW,
+            'start_at' => $from->format('Y-m-d H:i:s'),
+            'limit'    => $limit,
+            'order'    => 'id',
         ]);
-
-        return $events;
     }
 }
