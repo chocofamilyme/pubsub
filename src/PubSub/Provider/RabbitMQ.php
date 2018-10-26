@@ -93,7 +93,6 @@ class RabbitMQ implements Adapter
     private function __construct(array $config, RepeaterInterface $repeater)
     {
         $this->config = $config;
-        $this->connect();
         $this->repeater = $repeater;
     }
 
@@ -148,6 +147,7 @@ class RabbitMQ implements Adapter
      */
     public function publish()
     {
+        $this->connect();
         $this->exchangeDeclare();
 
         $this->currentChannel->basic_publish(
@@ -169,6 +169,7 @@ class RabbitMQ implements Adapter
      */
     public function subscribe($callback, array $params = [], string $consumerTag = '')
     {
+        $this->connect();
         if (empty($params['queue_name'])) {
             throw new ValidateException('Имя очереди обязательный параметр');
         }
