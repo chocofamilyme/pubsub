@@ -6,6 +6,7 @@
 
 namespace Chocofamily\PubSub\Provider;
 
+use Chocofamily\PubSub\Exceptions\ConnectionException;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
@@ -117,14 +118,22 @@ class RabbitMQ implements Adapter
         $this->disconnect();
     }
 
+    /**
+     * @throws ConnectionException
+     */
     public function connect()
     {
-        $this->connection = new AMQPStreamConnection(
-            $this->config['host'],
-            $this->config['port'],
-            $this->config['user'],
-            $this->config['password']
-        );
+        try {
+            $this->connection = new AMQPStreamConnection(
+                $this->config['host'],
+                $this->config['port'],
+                $this->config['user'],
+                $this->config['password']
+            );
+        } catch (\Exception $e) {
+            throw new ConnectionException($e->getMessage(), $e->getCode(), $e);
+        }
+
 
         $this->isConnected = true;
     }
