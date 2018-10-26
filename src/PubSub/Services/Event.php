@@ -79,7 +79,7 @@ class Event
      * @param \DateTime        $from
      * @param int              $limit
      *
-     * @return \stdClass
+     * @return array
      */
     public static function getFailMessage(
         \DateTime $from,
