@@ -87,8 +87,10 @@ class Event
     ) {
         return EventModel::find([
             'status = :no_send: AND created_at > :start_at:',
-            'no_send'  => EventModel::NEW,
-            'start_at' => $from->format('Y-m-d H:i:s'),
+            'bind' => [
+                'no_send'  => EventModel::NEW,
+                'start_at' => $from->format('Y-m-d H:i:s'),
+            ],
             'limit'    => $limit,
             'order'    => 'id',
         ]);
