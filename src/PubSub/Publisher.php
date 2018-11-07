@@ -17,9 +17,10 @@ class Publisher
 
     private $headers = [];
 
-    public function __construct(Adapter $provider)
+    public function __construct(Adapter $provider, array $params = [])
     {
         $this->provider = $provider;
+        $this->provider->addConfig($params);
 
         $this->headers['correlation_id']                 = CorrelationId::getInstance()->getCorrelationId();
         $this->headers['application_headers']['span_id'] = CorrelationId::getInstance()->getNextSpanId();
