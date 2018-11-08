@@ -36,13 +36,6 @@ class RabbitMQ implements Adapter
     private $config;
 
     /**
-     * Маршрутизация. По умолчанию топик
-     *
-     * @var string
-     */
-    private $type = 'topic';
-
-    /**
      *
      * @var bool
      */
@@ -84,6 +77,8 @@ class RabbitMQ implements Adapter
 
     /** @var callable */
     private $callback;
+
+    private $unacknowledged = 0;
 
     /**
      * RabbitMQ constructor.
@@ -174,6 +169,7 @@ class RabbitMQ implements Adapter
      * @param array    $params      — Настройки очереди подписчика
      * @param string   $consumerTag — Уникальное имя подписчика
      *
+     * @throws ConnectionException
      * @throws ValidateException
      */
     public function subscribe($callback, array $params = [], string $consumerTag = '')
@@ -183,7 +179,7 @@ class RabbitMQ implements Adapter
             throw new ValidateException('Имя очереди обязательный параметр');
         }
 
-        $this->config = array_merge($params, $this->config);
+        $this->addConfig($params);
 
         $this->exchangeDeclare();
 
@@ -281,8 +277,12 @@ class RabbitMQ implements Adapter
             throw $e;
         }
 
-        if ($isNoAck == false) {
-            $deliveryChannel->basic_ack($msg->delivery_info['delivery_tag']);
+        $this->unacknowledged++;
+        if ($isNoAck == false and $this->unacknowledged == $this->getConfig('prefetch_count', 1)) {
+            $deliveryChannel->basic_ack(
+                $msg->delivery_info['delivery_tag'],
+                $this->getConfig('prefetch_count', 1) > 1
+            );
         }
     }
 
@@ -317,6 +317,14 @@ class RabbitMQ implements Adapter
     private function getConfig(string $key, $default = '')
     {
         return isset($this->config[$key]) ? $this->config[$key] : $default;
+    }
+
+    /**
+     * @param array $params
+     */
+    public function addConfig(array $params = [])
+    {
+        $this->config = array_merge($params, $this->config);
     }
 
     /**

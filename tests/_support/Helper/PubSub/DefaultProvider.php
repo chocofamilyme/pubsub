@@ -59,4 +59,8 @@ class DefaultProvider implements Adapter
     {
         $this->exchange = $queue;
     }
+
+    public function addConfig(array $params = [])
+    {
+    }
 }
