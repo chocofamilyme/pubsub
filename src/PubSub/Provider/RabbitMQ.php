@@ -279,6 +279,7 @@ class RabbitMQ implements Adapter
 
         $this->unacknowledged++;
         if ($isNoAck == false and $this->unacknowledged == $this->getConfig('prefetch_count', 1)) {
+            $this->unacknowledged = 0;
             $deliveryChannel->basic_ack(
                 $msg->delivery_info['delivery_tag'],
                 $this->getConfig('prefetch_count', 1) > 1
