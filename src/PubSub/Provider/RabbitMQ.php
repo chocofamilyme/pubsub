@@ -27,8 +27,8 @@ use Chocofamily\PubSub\Provider\RabbitMQ\Message\Input as InputMessage;
  */
 class RabbitMQ implements Adapter
 {
-    const REDELIVERY_COUNT = 5;
-    const CACHE_LIFETIME   = 1800;
+    const REDELIVERY_COUNT      = 5;
+    const CACHE_LIFETIME        = 1800;
     const DEFAULT_EXCHANGE_TYPE = 'topic';
 
     private static $instance;
@@ -40,13 +40,6 @@ class RabbitMQ implements Adapter
      * @var bool
      */
     private $passive = false;
-
-    /**
-     * Сохранять на диск
-     *
-     * @var bool
-     */
-    private $durable = true;
 
     /**
      * Удаление exchange если нет подключений к нему
@@ -83,17 +76,17 @@ class RabbitMQ implements Adapter
     /**
      * RabbitMQ constructor.
      *
-     * @param array    $config
+     * @param array             $config
      * @param RepeaterInterface $repeater
      */
     private function __construct(array $config, RepeaterInterface $repeater)
     {
-        $this->config = $config;
+        $this->config   = $config;
         $this->repeater = $repeater;
     }
 
     /**
-     * @param array $config
+     * @param array             $config
      *
      * @param RepeaterInterface $repeater
      *
@@ -188,7 +181,7 @@ class RabbitMQ implements Adapter
                 $params['queue_name'],
                 false,
                 $this->getConfig('durable', true),
-                false,
+                $this->getConfig('exclusive', false),
                 false,
                 false,
                 new AMQPTable($this->getConfig('queue', []))
@@ -210,7 +203,7 @@ class RabbitMQ implements Adapter
             $queueName[0],
             $consumerTag,
             false,
-            false,
+            $this->getConfig('no_ack', false),
             false,
             false,
             [$this, 'callbackWrapper']
@@ -237,7 +230,7 @@ class RabbitMQ implements Adapter
                 $this->currentExchange->getName(),
                 $this->getConfig('exchange_type', self::DEFAULT_EXCHANGE_TYPE),
                 $this->passive,
-                $this->durable,
+                $this->getConfig('durable', true),
                 $this->auto_delete
             );
             $this->exchanges[$this->currentExchange->getName()] = true;
