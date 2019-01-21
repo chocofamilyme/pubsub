@@ -41,6 +41,13 @@ class Publisher
 
     public function setHeader(array $headers)
     {
+        if (isset($headers['application_headers'])) {
+            $this->headers['application_headers'] = array_merge(
+                $headers['application_headers'],
+                $this->headers['application_headers']
+            );
+        }
+
         $this->headers = array_merge($headers, $this->headers);
     }
 
