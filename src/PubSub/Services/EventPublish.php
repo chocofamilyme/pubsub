@@ -25,7 +25,7 @@ class EventPublish
     /**
      * EventPublish constructor.
      *
-     * @param                 $eventSource
+     * @param                                       $eventSource
      * @param \Chocofamily\PubSub\Models\Event|null $model
      */
     public function __construct($eventSource, $model = null)
@@ -37,6 +37,13 @@ class EventPublish
         $this->publisher = new Publisher($eventSource);
     }
 
+    /**
+     * @param array $headers
+     */
+    public function setHeaders(array $headers)
+    {
+        $this->publisher->setHeader($headers);
+    }
 
     /**
      * @param \Chocofamily\PubSub\Models\Event $model

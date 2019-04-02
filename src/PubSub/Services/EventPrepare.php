@@ -41,17 +41,21 @@ class EventPrepare
     /**
      * Отправить событие
      *
-     * @param string $to
-     *
      * @param        $eventSource
      *
+     * @param string $to
+     *
+     * @param array  $headers
+     *
+     * @throws ValidateException
      * @throws \ErrorException
      */
-    public function up($eventSource, string $to)
+    public function up($eventSource, string $to, array $headers = [])
     {
         $model = $this->create();
 
         $eventPublish = new EventPublish($eventSource, $model);
+        $eventPublish->setHeaders($headers);
         $eventPublish->publish($to);
     }
 
