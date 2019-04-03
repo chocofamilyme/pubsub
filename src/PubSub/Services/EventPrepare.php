@@ -7,6 +7,7 @@
 namespace Chocofamily\PubSub\Services;
 
 use Chocofamily\PubSub\Exceptions\ValidateException;
+use Chocofamily\PubSub\Models\ModelInterface;
 use Phalcon\Mvc\Model\Transaction\Manager as TxManager;
 
 use Chocofamily\PubSub\Models\Event as EventModel;
@@ -22,7 +23,7 @@ use Chocofamily\PubSub\SerializerInterface;
 class EventPrepare
 {
     /**
-     * @var \Phalcon\Mvc\Model
+     * @var ModelInterface
      */
     private $model;
 
@@ -31,7 +32,7 @@ class EventPrepare
 
     private $eventType;
 
-    public function __construct(\Phalcon\Mvc\Model $model, SerializerInterface $modelSerializer, int $eventType)
+    public function __construct(ModelInterface $model, SerializerInterface $modelSerializer, int $eventType)
     {
         $this->model           = $model;
         $this->modelSerializer = $modelSerializer;

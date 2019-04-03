@@ -154,6 +154,8 @@ $event->up($eventSource, 'order.created.-5');
 	
 ````
 
+Модель **Order** реализовывать итерфейс ModelInterface.
+
 Метод `up` работает так
 - db transaction start
 - order->save();
