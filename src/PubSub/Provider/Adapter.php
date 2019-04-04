@@ -18,7 +18,7 @@ interface Adapter
 
     public function setMessage(array $message, array $headers = []);
 
-    public function setCurrentExchange(string $queue);
+    public function setCurrentExchange($route, string $exchangeName = '');
 
     public function addConfig(array $params = []);
 }

@@ -16,7 +16,10 @@ class Subscriber
     private $provider;
 
     /** @var string */
-    private $route;
+    private $routes;
+
+    /** @var string */
+    private $exchangeName;
 
     /** @var array */
     private $params;
@@ -30,23 +33,30 @@ class Subscriber
     /**
      * Subscriber constructor.
      *
-     * @param Adapter $provider
-     * @param string  $route
-     * @param array   $params
-     * @param string  $consumerTag
+     * @param Adapter      $provider
+     * @param string|array $routes
+     * @param array        $params
+     * @param string       $consumerTag
+     * @param string       $exchangeName
      */
-    public function __construct(Adapter $provider, string $route, array $params = [], string $consumerTag = '')
-    {
-        $this->provider    = $provider;
-        $this->route       = $route;
-        $this->params      = $params;
-        $this->consumerTag = $consumerTag;
+    public function __construct(
+        Adapter $provider,
+        $routes,
+        array $params = [],
+        string $consumerTag = '',
+        string $exchangeName = ''
+    ) {
+        $this->provider     = $provider;
+        $this->routes       = $routes;
+        $this->params       = $params;
+        $this->consumerTag  = $consumerTag;
+        $this->exchangeName = $exchangeName;
     }
 
 
     public function subscribe($callback)
     {
-        $this->provider->setCurrentExchange($this->route);
+        $this->provider->setCurrentExchange($this->routes, $this->exchangeName);
 
         $this->callback = $callback;
 
@@ -56,7 +66,7 @@ class Subscriber
 
     public function callback(Message $message)
     {
-        $id = $message->getHeader('correlation_id');
+        $id     = $message->getHeader('correlation_id');
         $spanId = $message->getHeader('span_id');
         CorrelationId::getInstance()->setCorrelation($id, $spanId);
 

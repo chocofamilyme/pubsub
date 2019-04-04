@@ -82,6 +82,22 @@ $routeKey = 'order.created';
 $publisher->send($payload, $routeKey);
 ````
 Для RabbitMQ переменная `$routeKey` должна состоять минимум из двух частей разделенных точкой `.`. Пример `order.created`. Имя Exchange будет содержать первый блок, т.е. `order`. После этого если зайдете в админку rabbitmq должен создаться exchange с именем `order`.
+Обновленно: начиная с версии 2.* можно указать `exchange`, которому привяжется маршрут `$routeKey, пример:
+````php
+$publisher = new Publisher($di->getShared('eventsource'));
+
+$payload = [
+	'event_id' => 11995,
+	'name' => 'docx',
+	'age' => 25
+];
+
+$exchange = 'order';
+$routeKey = 'order.created';
+
+$publisher->send($payload, $routeKey, $exchange);
+````
+
 
 #### Подписка на событие
 Для подписки на события используется класс `Chocofamily\PubSub\Subscriber`. Минимальный рабочий пример:
@@ -94,6 +110,30 @@ $params = [
 $taskName = 'your_task_name';
 
 $subscriber = new Subscriber($di->getShared('eventsource'), 'order.created.*', $params, $taskName);
+
+$subscriber->subscribe(function ($headers, $body) {
+    echo print_r($headers, 1). PHP_EOL;
+    echo print_r($body, 1). PHP_EOL;
+});
+````
+
+Обновленно: начиная с версии 2.* можно указать `exchange` и связпть с ним маршрут. Теперь можно указать массив 
+маршрутов. Пример:
+````php
+$params = [
+    'queue_name' => 'restapi_orderx',
+];
+
+$taskName = 'your_task_name';
+
+$routeKeys = [
+    'order.created'
+    'order.payed'
+];
+
+$exchange = 'order';
+
+$subscriber = new Subscriber($di->getShared('eventsource'), $routeKeys, $params, $taskName, $exchange);
 
 $subscriber->subscribe(function ($headers, $body) {
     echo print_r($headers, 1). PHP_EOL;
@@ -154,7 +194,29 @@ $event->up($eventSource, 'order.created.-5');
 	
 ````
 
-Модель **Order** реализовывать итерфейс ModelInterface.
+Модель **Order** должна реализовывать итерфейс ModelInterface.
+
+Обновленно: начиная с версии 2.* можно указать `exchange` и связпть с ним маршрут. Привер:
+````php
+use Chocofamily\PubSub\Services\EventPrepare;
+
+...
+
+$order = new Order([
+    'user_id' => 11166541,
+    'status'  => 0,
+    'total'   => 5852,
+]);
+
+$eventSource = $di->get('eventsource');
+
+$routeKey = 'order.created.-5';
+$exchange = 'order';
+
+$event = new EventPrepare($order, new OrderSerialize(['name' => 'docx']), 1);
+$event->up($eventSource, $routeKey, $exchange);
+	
+````
 
 Метод `up` работает так
 - db transaction start
@@ -162,13 +224,6 @@ $event->up($eventSource, 'order.created.-5');
 - eventModel->save()
 - db transaction commit
 - event publish
-
-
-
-
-
-
-
 
 @todo
 - Написать интерфейс для транзакций и убрать зависимость от фреймворка
