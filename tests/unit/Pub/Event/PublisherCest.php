@@ -30,7 +30,7 @@ class PublisherCest
 
         $eventPublish = new EventPublish($provider, $event);
 
-        $eventPublish->publish('test.queue');
+        $eventPublish->publish('test.queue', 'test');
 
         $I->assertEquals($provider->queue['test.queue']['message'], '{"event_id":1,"id":1,"text":"Hello"}');
         $I->assertEquals($event->getStatus(), Event::SENT);

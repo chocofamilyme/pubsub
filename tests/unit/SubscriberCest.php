@@ -37,7 +37,7 @@ class SubscriberCest
             $I->assertEquals($payload, $inPayload);
         };
 
-        $subscriber = new Subscriber($provider, 'order.created');
+        $subscriber = new Subscriber($provider, 'order.created', [], '', 'order');
         $helper->invokeProperty($subscriber, 'callback', $callback);
 
         $subscriber->callback($message);

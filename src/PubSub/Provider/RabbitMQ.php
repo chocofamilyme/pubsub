@@ -141,6 +141,7 @@ class RabbitMQ implements Adapter
     /**
      * Опубликовать сообщение
      *
+     * @throws ConnectionException
      */
     public function publish()
     {
@@ -150,7 +151,7 @@ class RabbitMQ implements Adapter
         $this->currentChannel->basic_publish(
             $this->message->getPayload(),
             $this->currentExchange->getName(),
-            $this->currentExchange->getRoute()
+            $this->currentExchange->getRoutes()[0]
         );
     }
 
@@ -187,11 +188,13 @@ class RabbitMQ implements Adapter
                 new AMQPTable($this->getConfig('queue', []))
             );
 
-        $this->currentChannel->queue_bind(
-            $queueName[0],
-            $this->currentExchange->getName(),
-            $this->currentExchange->getRoute()
-        );
+        foreach ($this->currentExchange->getRoutes() as $route) {
+            $this->currentChannel->queue_bind(
+                $queueName[0],
+                $this->currentExchange->getName(),
+                $route
+            );
+        }
 
         $this->currentChannel->basic_qos(
             null,
@@ -281,12 +284,20 @@ class RabbitMQ implements Adapter
     }
 
     /**
-     * @param string $queue
+     * @param string|array $route
+     * @param string $exchangeName
      */
-    public function setCurrentExchange(string $queue)
+    public function setCurrentExchange($route, string $exchangeName = '')
     {
-        $name                  = explode('.', $queue)[0];
-        $this->currentExchange = new Exchange($name, $queue);
+        if (false == is_array($route)) {
+            $route = [$route];
+        }
+
+        if (empty($exchangeName)) {
+            $exchangeName = explode('.', $route[0])[0];
+        }
+
+        $this->currentExchange = new Exchange($exchangeName, $route);
     }
 
 

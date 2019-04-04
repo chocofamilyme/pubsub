@@ -6,7 +6,6 @@
 
 namespace Chocofamily\PubSub\Services;
 
-use Chocofamily\PubSub\Exceptions\ValidateException;
 use Chocofamily\PubSub\Models\ModelInterface;
 use Phalcon\Mvc\Model\Transaction\Manager as TxManager;
 
@@ -44,27 +43,27 @@ class EventPrepare
      *
      * @param        $eventSource
      *
-     * @param string $to
+     * @param string $route
      *
      * @param array  $headers
      *
-     * @throws ValidateException
+     * @param string $exchange
+     *
      * @throws \ErrorException
      */
-    public function up($eventSource, string $to, array $headers = [])
+    public function up($eventSource, string $route, array $headers = [], string $exchange = '')
     {
         $model = $this->create();
 
         $eventPublish = new EventPublish($eventSource, $model);
         $eventPublish->setHeaders($headers);
-        $eventPublish->publish($to);
+        $eventPublish->publish($route, $exchange);
     }
 
     /**
      * Создать запись о событии
      *
      * @return EventModel
-     * @throws ValidateException
      */
     public function create()
     {

@@ -55,9 +55,9 @@ class DefaultProvider implements Adapter
         $this->message = \json_encode($message, JSON_UNESCAPED_UNICODE);
     }
 
-    public function setCurrentExchange(string $queue)
+    public function setCurrentExchange($route, string $exchangeName = '')
     {
-        $this->exchange = $queue;
+        $this->exchange = $route;
     }
 
     public function addConfig(array $params = [])

@@ -28,13 +28,14 @@ class Publisher
 
     /**
      * @param array  $message
-     * @param string $to
+     * @param string $route
+     * @param string $exchange
      */
-    public function send(array $message, string $to)
+    public function send(array $message, string $route, string $exchange = '')
     {
         $this->provider->setMessage($message, $this->headers);
 
-        $this->provider->setCurrentExchange($to);
+        $this->provider->setCurrentExchange($route, $exchange);
 
         $this->provider->publish();
     }

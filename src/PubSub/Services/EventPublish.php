@@ -54,13 +54,15 @@ class EventPublish
     }
 
     /**
-     * @param string $to
+     * @param string $route
+     *
+     * @param string $exchangeName
      *
      * @throws \ErrorException
      */
-    public function publish(string $to)
+    public function publish(string $route, string $exchangeName = '')
     {
-        $this->publisher->send($this->event->getPayload(), $to);
+        $this->publisher->send($this->event->getPayload(), $route, $exchangeName);
         $this->event->setSent();
     }
 }

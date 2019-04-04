@@ -19,13 +19,13 @@ class Exchange
     /** @var string */
     private $name;
 
-    /** @var string */
-    private $route;
+    /** @var array */
+    private $routes = [];
 
-    public function __construct(string $name, string $route)
+    public function __construct(string $name, array $routes)
     {
-        $this->name  = $name;
-        $this->route = $route;
+        $this->name   = $name;
+        $this->routes = $routes;
     }
 
     /**
@@ -39,8 +39,8 @@ class Exchange
     /**
      * @return mixed
      */
-    public function getRoute(): string
+    public function getRoutes(): string
     {
-        return $this->route;
+        return $this->routes;
     }
 }
