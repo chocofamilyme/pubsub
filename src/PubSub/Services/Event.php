@@ -9,7 +9,7 @@ namespace Chocofamily\PubSub\Services;
 use Chocofamily\PubSub\Exceptions\ModelException;
 use Chocofamily\PubSub\Exceptions\ValidateException;
 use Chocofamily\PubSub\Models\Event as EventModel;
-use Chocofamily\PubSub\Provider\RabbitMQ\Exchange;
+
 
 /**
  * Class Event
@@ -97,7 +97,7 @@ class Event
         ]);
     }
 
-    public function reTry($dateFormat, $limit = 200)
+    public function reTry($eventSource, $dateFormat, $limit = 200)
     {
         do {
             $events = Event::getFailMessage($dateFormat, $limit);
@@ -105,7 +105,7 @@ class Event
             foreach ($events as $event) {
 
                 try {
-                    $eventPublish = new EventPublish($this->getDI()->get('eventsource'), $event);
+                    $eventPublish = new EventPublish($eventSource, $event);
                     $eventPublish->publish($event->getRoutingKey(), $event->getExchange());
                 } catch (\Exception  $e) {
                     $message = sprintf('%d %s in %s:%s', $e->getCode(), $e->getMessage(), $e->getFile(), $e->getLine());
