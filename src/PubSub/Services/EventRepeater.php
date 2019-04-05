@@ -97,7 +97,7 @@ class EventRepeater
             foreach ($events as $event) {
                 $eventPublish = new EventPublish($this->source, $event);
                 $eventPublish->publish(
-                    $this->chechRouteKey($event->getRoutingKey()),
+                    $this->checkRouteKey($event->getRoutingKey()),
                     $this->checkExchange($event->getExchange())
                 );
             }
