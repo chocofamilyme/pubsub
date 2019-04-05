@@ -80,7 +80,7 @@ class Event
      * @param \DateTime $from
      * @param int       $limit
      *
-     * @return array
+     * @return \Phalcon\Mvc\Model\ResultsetInterface
      */
     public static function getFailMessage(
         \DateTime $from,
@@ -96,23 +96,4 @@ class Event
             'order' => 'id',
         ]);
     }
-
-    /**
-     * @param     $eventSource
-     * @param     $dateFormat
-     * @param int $limit
-     *
-     * @throws \ErrorException
-     */
-    public function reTry($eventSource, $dateFormat, $limit = 200)
-    {
-        do {
-            $events = Event::getFailMessage($dateFormat, $limit);
-            foreach ($events as $event) {
-                $eventPublish = new EventPublish($eventSource, $event);
-                $eventPublish->publish($event->getRoutingKey(), $event->getExchange());
-            }
-        } while (count($events) >= $limit);
-    }
-
 }
