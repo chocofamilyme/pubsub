@@ -9,6 +9,7 @@ namespace Chocofamily\PubSub\Services;
 use Chocofamily\PubSub\Exceptions\ModelException;
 use Chocofamily\PubSub\Exceptions\ValidateException;
 use Chocofamily\PubSub\Models\Event as EventModel;
+use Chocofamily\PubSub\Provider\RabbitMQ\Exchange;
 
 /**
  * Class Event
@@ -29,7 +30,7 @@ class Event
      */
     public function __construct($model = null)
     {
-        $this->model     = $model;
+        $this->model = $model;
     }
 
     /**
@@ -76,8 +77,8 @@ class Event
     /**
      * Не отправленные события
      *
-     * @param \DateTime        $from
-     * @param int              $limit
+     * @param \DateTime $from
+     * @param int       $limit
      *
      * @return array
      */
@@ -87,12 +88,31 @@ class Event
     ) {
         return EventModel::find([
             'status = :no_send: AND created_at > :start_at:',
-            'bind' => [
+            'bind'  => [
                 'no_send'  => EventModel::NEW,
                 'start_at' => $from->format('Y-m-d H:i:s'),
             ],
-            'limit'    => $limit,
-            'order'    => 'id',
+            'limit' => $limit,
+            'order' => 'id',
         ]);
     }
+
+    public function reTry($dateFormat, $limit = 200)
+    {
+        do {
+            $events = Event::getFailMessage($dateFormat, $limit);
+
+            foreach ($events as $event) {
+
+                try {
+                    $eventPublish = new EventPublish($this->getDI()->get('eventsource'), $event);
+                    $eventPublish->publish($event->getRoutingKey(), $event->getExchange());
+                } catch (\Exception  $e) {
+                    $message = sprintf('%d %s in %s:%s', $e->getCode(), $e->getMessage(), $e->getFile(), $e->getLine());
+                    $this->getDI()['logger']->error($message);
+                }
+            }
+        } while (count($events) >= $limit);
+    }
+
 }

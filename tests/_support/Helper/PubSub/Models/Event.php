@@ -51,6 +51,16 @@ class Event
      */
     public $updated_at;
 
+    /**
+     * @var string
+     */
+    public $exchange;
+
+    /**
+     * @var string
+     */
+    public $routing_key;
+
     public function __construct()
     {
         self::$id++;
@@ -78,6 +88,22 @@ class Event
     public function getPayload(): array
     {
         return $this->payload;
+    }
+
+    /**
+     * @return string
+     */
+    public function getExchange(): string
+    {
+        return $this->exchange;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRoutingKey(): string
+    {
+        return $this->routing_key;
     }
 
     /**

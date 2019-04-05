@@ -37,9 +37,9 @@ class Exchange
     }
 
     /**
-     * @return mixed
+     * @return array
      */
-    public function getRoutes(): string
+    public function getRoutes(): array
     {
         return $this->routes;
     }

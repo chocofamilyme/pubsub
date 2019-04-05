@@ -54,6 +54,16 @@ class Event extends \Phalcon\Mvc\Model implements ModelInterface
     public $updated_at;
 
     /**
+     * @var string
+     */
+    public $exchange;
+
+    /**
+     * @var string
+     */
+    public $routing_key;
+
+    /**
      * Returns table name mapped in the model.
      *
      * @codeCoverageIgnore
@@ -156,6 +166,22 @@ class Event extends \Phalcon\Mvc\Model implements ModelInterface
     public function getStatus(): int
     {
         return $this->status;
+    }
+
+    /**
+     * @return string
+     */
+    public function getExchange(): string
+    {
+        return $this->exchange;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRoutingKey(): string
+    {
+        return $this->routing_key;
     }
 
     /**
