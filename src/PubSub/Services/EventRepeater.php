@@ -97,7 +97,7 @@ class EventRepeater
             foreach ($events as $event) {
                 $eventPublish = new EventPublish($this->source, $event);
                 $eventPublish->publish(
-                    $event->getRoutingKey(),
+                    $this->chechRouteKey($event->getRoutingKey()),
                     $this->checkExchange($event->getExchange())
                 );
             }
@@ -107,10 +107,20 @@ class EventRepeater
     /**
      * @param string $exchange
      *
-     * @return bool
+     * @return string
      */
-    private function checkExchange(string $exchange): bool
+    private function checkExchange(string $exchange): string
     {
         return empty($exchange) ? $this->defaultExchange : $exchange;
+    }
+
+    /**
+     * @param string $routeKey
+     *
+     * @return string
+     */
+    private function chechRouteKey(string $routeKey): string
+    {
+        return empty($routeKey) ? $this->defaultRoute : $routeKey;
     }
 }
