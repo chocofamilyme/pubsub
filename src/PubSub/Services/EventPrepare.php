@@ -57,7 +57,7 @@ class EventPrepare
 
         $eventPublish = new EventPublish($eventSource, $model);
         $eventPublish->setHeaders($headers);
-        $eventPublish->publish($model->getRoutingKey(), $model->getExchange());
+        $eventPublish->publish($route, $exchange);
     }
 
     /**
