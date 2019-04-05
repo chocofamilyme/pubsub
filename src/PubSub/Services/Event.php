@@ -97,20 +97,20 @@ class Event
         ]);
     }
 
+    /**
+     * @param     $eventSource
+     * @param     $dateFormat
+     * @param int $limit
+     *
+     * @throws \ErrorException
+     */
     public function reTry($eventSource, $dateFormat, $limit = 200)
     {
         do {
             $events = Event::getFailMessage($dateFormat, $limit);
-
             foreach ($events as $event) {
-
-                try {
-                    $eventPublish = new EventPublish($eventSource, $event);
-                    $eventPublish->publish($event->getRoutingKey(), $event->getExchange());
-                } catch (\Exception  $e) {
-                    $message = sprintf('%d %s in %s:%s', $e->getCode(), $e->getMessage(), $e->getFile(), $e->getLine());
-                    $this->getDI()['logger']->error($message);
-                }
+                $eventPublish = new EventPublish($eventSource, $event);
+                $eventPublish->publish($event->getRoutingKey(), $event->getExchange());
             }
         } while (count($events) >= $limit);
     }
