@@ -171,7 +171,7 @@ class Event extends \Phalcon\Mvc\Model implements ModelInterface
     /**
      * @return string
      */
-    public function getExchange()
+    public function getExchange(): string
     {
         return $this->exchange;
     }
@@ -179,7 +179,7 @@ class Event extends \Phalcon\Mvc\Model implements ModelInterface
     /**
      * @return string
      */
-    public function getRoutingKey()
+    public function getRoutingKey(): string
     {
         return $this->routing_key;
     }
