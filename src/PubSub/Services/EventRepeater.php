@@ -119,7 +119,7 @@ class EventRepeater
      *
      * @return string
      */
-    private function chechRouteKey(string $routeKey): string
+    private function checkRouteKey(string $routeKey): string
     {
         return empty($routeKey) ? $this->defaultRoute : $routeKey;
     }
