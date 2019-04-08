@@ -117,7 +117,7 @@ class EventPrepare
     protected function getExchangeName($route, $exchangeName): string
     {
         if (empty($exchangeName)) {
-            $exchangeName = explode('.', $route[0])[0];
+            $exchangeName = explode('.', $route)[0];
         }
 
         return $exchangeName;
