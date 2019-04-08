@@ -8,7 +8,6 @@ namespace Chocofamily\PubSub\Services;
 
 use Chocofamily\PubSub\Models\ModelInterface;
 use Phalcon\Mvc\Model\Transaction\Manager as TxManager;
-
 use Chocofamily\PubSub\Models\Event as EventModel;
 use Chocofamily\PubSub\SerializerInterface;
 
@@ -53,19 +52,23 @@ class EventPrepare
      */
     public function up($eventSource, string $route, array $headers = [], string $exchange = '')
     {
-        $model = $this->create();
+        $exchangeName = $this->getExchangeName($route, $exchange);
+        $model        = $this->create($route, $exchangeName);
 
         $eventPublish = new EventPublish($eventSource, $model);
         $eventPublish->setHeaders($headers);
-        $eventPublish->publish($route, $exchange);
+        $eventPublish->publish($model->getRoutingKey(), $model->getExchange());
     }
 
     /**
      * Создать запись о событии
      *
+     * @param string $route
+     * @param string $exchange
+     *
      * @return EventModel
      */
-    public function create()
+    public function create(string $route, string $exchange)
     {
         $manager     = new TxManager();
         $transaction = $manager->get();
@@ -82,9 +85,11 @@ class EventPrepare
 
         $eventModel->setTransaction($transaction);
 
-        $eventModel->model_id = $this->model->getId();
-        $eventModel->type     = $this->eventType;
-        $eventModel->status   = EventModel::NEW;
+        $eventModel->model_id    = $this->model->getId();
+        $eventModel->type        = $this->eventType;
+        $eventModel->status      = EventModel::NEW;
+        $eventModel->routing_key = $route;
+        $eventModel->exchange    = $exchange;
 
         $eventModel->payload = $this->modelSerializer->getAttributes($this->model);
 
@@ -101,5 +106,20 @@ class EventPrepare
         $eventModel->afterFetch();
 
         return $eventModel;
+    }
+
+    /**
+     * @param $route
+     * @param $exchangeName
+     *
+     * @return string
+     */
+    protected function getExchangeName($route, $exchangeName): string
+    {
+        if (empty($exchangeName)) {
+            $exchangeName = explode('.', $route)[0];
+        }
+
+        return $exchangeName;
     }
 }

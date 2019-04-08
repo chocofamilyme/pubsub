@@ -10,6 +10,7 @@ use Chocofamily\PubSub\Exceptions\ModelException;
 use Chocofamily\PubSub\Exceptions\ValidateException;
 use Chocofamily\PubSub\Models\Event as EventModel;
 
+
 /**
  * Class Event
  *
@@ -29,7 +30,7 @@ class Event
      */
     public function __construct($model = null)
     {
-        $this->model     = $model;
+        $this->model = $model;
     }
 
     /**
@@ -76,10 +77,10 @@ class Event
     /**
      * Не отправленные события
      *
-     * @param \DateTime        $from
-     * @param int              $limit
+     * @param \DateTime $from
+     * @param int       $limit
      *
-     * @return array
+     * @return \Phalcon\Mvc\Model\ResultsetInterface
      */
     public static function getFailMessage(
         \DateTime $from,
@@ -87,12 +88,12 @@ class Event
     ) {
         return EventModel::find([
             'status = :no_send: AND created_at > :start_at:',
-            'bind' => [
+            'bind'  => [
                 'no_send'  => EventModel::NEW,
                 'start_at' => $from->format('Y-m-d H:i:s'),
             ],
-            'limit'    => $limit,
-            'order'    => 'id',
+            'limit' => $limit,
+            'order' => 'id',
         ]);
     }
 }
