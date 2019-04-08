@@ -225,6 +225,23 @@ $event->up($eventSource, $routeKey, $exchange);
 - db transaction commit
 - event publish
 
+#### Повторная отправка событие
+Для повторной отправке событие  используется класс `Chocofamily\PubSub\Services\EventRepeater`. Рабочий пример:
+````php
+use Chocofamily\PubSub\Services\EventRepeater;
+
+...
+
+$dateStart = \DateTime::createFromFormat('Y-m-d', '2018-01-01');
+try {
+    $event = new EventRepeater($di->get('eventsource'), $dateStart);
+    $event->reTry();
+} catch (\Exception $e) {
+    $message = sprintf('%d %s in %s:%s', $e->getCode(), $e->getMessage(), $e->getFile(), $e->getLine());
+    $di->get('logger')->error($message);
+}
+````
+
 @todo
 - Написать интерфейс для транзакций и убрать зависимость от фреймворка
 - Написать интерфейс для моделей таблицы events 
