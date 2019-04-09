@@ -39,11 +39,6 @@ class Event extends \Phalcon\Mvc\Model implements ModelInterface
     public $status;
 
     /**
-     * @var integer
-     */
-    public $model_id;
-
-    /**
      * @var string
      */
     public $created_at;
@@ -182,14 +177,6 @@ class Event extends \Phalcon\Mvc\Model implements ModelInterface
     public function getRoutingKey(): string
     {
         return $this->routing_key;
-    }
-
-    /**
-     * @return int
-     */
-    public function getModelId(): int
-    {
-        return $this->model_id;
     }
 
     /**
