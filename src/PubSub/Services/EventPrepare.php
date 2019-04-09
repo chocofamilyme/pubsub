@@ -82,15 +82,12 @@ class EventPrepare
         $this->model->refresh();
 
         $eventModel = new EventModel();
-
         $eventModel->setTransaction($transaction);
 
-        $eventModel->model_id    = $this->model->getId();
         $eventModel->type        = $this->eventType;
         $eventModel->status      = EventModel::NEW;
         $eventModel->routing_key = $route;
         $eventModel->exchange    = $exchange;
-
         $eventModel->payload = $this->modelSerializer->getAttributes($this->model);
 
         if ($eventModel->save() === false) {
