@@ -60,5 +60,7 @@ class EventCleaner
             $messages = $result->getMessages();
             throw new ModelException("Не удалось очистить событие ".$messages[0]);
         }
+
+        return $result;
     }
 }
