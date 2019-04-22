@@ -46,7 +46,7 @@ class EventCleaner
     /**
      * @throws ModelException
      */
-    public function clear()
+    public function clean()
     {
         $phql = "DELETE FROM Event WHERE status = :send: AND created_at < :start_at:";
         $this->manager->registerNamespaceAlias('Event', 'Chocofamily\PubSub\Models\Event');
