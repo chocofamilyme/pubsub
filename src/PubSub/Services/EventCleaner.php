@@ -34,7 +34,7 @@ class EventCleaner
      *
      * @throws \Exception
      */
-    public function __construct(ManagerInterface $manager,\DateTime $dateTime = null)
+    public function __construct(ManagerInterface $manager, \DateTime $dateTime = null)
     {
         if (is_null($dateTime)) {
             $dateTime = new \DateTime();
@@ -60,7 +60,5 @@ class EventCleaner
             $messages = $result->getMessages();
             throw new ModelException("Не удалось очистить событие ".$messages[0]);
         }
-
-        return $result;
     }
 }
