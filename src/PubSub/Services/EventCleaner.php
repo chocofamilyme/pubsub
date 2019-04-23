@@ -8,7 +8,7 @@ namespace Chocofamily\PubSub\Services;
 
 use Chocofamily\PubSub\Exceptions\ModelException;
 use Chocofamily\PubSub\Models\Event;
-use Phalcon\Di;
+use Phalcon\Mvc\Model\ManagerInterface;
 
 /**
  * Class EventCleaner
@@ -22,25 +22,26 @@ class EventCleaner
      */
     protected $dateTime;
     /**
-     * @var mixed
+     * @var ManagerInterface
      */
     protected $manager;
 
     /**
      * EventCleaner constructor.
      *
-     * @param \DateTime|null $dateTime
+     * @param ManagerInterface $manager
+     * @param \DateTime|null   $dateTime
      *
      * @throws \Exception
      */
-    public function __construct(\DateTime $dateTime = null)
+    public function __construct(ManagerInterface $manager,\DateTime $dateTime = null)
     {
         if (is_null($dateTime)) {
             $dateTime = new \DateTime();
             $dateTime->modify('-1 month');
         }
         $this->dateTime = $dateTime;
-        $this->manager  = Di::getDefault()->get('modelsManager');
+        $this->manager  = $manager;
     }
 
     /**
