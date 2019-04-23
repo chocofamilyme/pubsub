@@ -48,7 +48,7 @@ class EventCleaner
      */
     public function clean()
     {
-        $phql = "DELETE FROM Chocofamily\PubSub\Models\Event WHERE status = :send: AND created_at < :start_at:";
+        $phql = "DELETE FROM Chocofamily\PubSub\Models\Event WHERE status = :status: AND created_at < :start_at:";
 
         $result = $this->manager->executeQuery($phql, [
             'status'   => Event::SENT,
