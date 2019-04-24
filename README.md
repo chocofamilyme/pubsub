@@ -242,6 +242,46 @@ try {
 }
 ````
 
+
+#### Очистка журнала событий
+Для очистки событий  используется класс `Chocofamily\PubSub\Services\EventCleaner` с методом `clean`. 
+
+Рабочий пример:
+````php
+use Chocofamily\PubSub\Services\EventCleaner;
+
+...
+
+try {
+    $event = new EventCleaner($di->get('modelsManager'));
+    $event->clean();
+} catch (ModelException $e) {
+    $message = sprintf('%d %s in %s:%s', $e->getCode(), $e->getMessage(), $e->getFile(), $e->getLine());
+    $di->get('logger')->error($message);
+}
+
+````
+По умолчанию удаляетя событие больше 1 месяца.
+Если передать дату как второй параметр в конструкторе, то будет удалятся все событие до указонной даты:
+````php
+use Chocofamily\PubSub\Services\EventCleaner;
+
+...
+
+$dateTime  = new \DateTime();
+$dateTime = $dateTime->modify('-1 day');
+
+try {
+    $event = new EventCleaner($di->get('modelsManager'), $dateTime);
+    $event->clean();
+} catch (ModelException $e) {
+    $message = sprintf('%d %s in %s:%s', $e->getCode(), $e->getMessage(), $e->getFile(), $e->getLine());
+    $di->get('logger')->error($message);
+}
+
+````
+
+
 @todo
 - Написать интерфейс для транзакций и убрать зависимость от фреймворка
 - Написать интерфейс для моделей таблицы events 
