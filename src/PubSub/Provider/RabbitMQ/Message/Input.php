@@ -22,6 +22,7 @@ class Input implements Message
             $message->get_properties(),
             $message->get('application_headers')->getNativeData()
         );
+        $this->headers['routing_key'] = $message->delivery_info['routing_key'];
 
         unset($this->headers['application_headers']);
 
