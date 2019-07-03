@@ -22,7 +22,7 @@
   "require": {
     "php": ">= 7.0.0",
     "chocofamilyme/pathcorrelation": "0.2.*",
-    "php-amqplib/php-amqplib": "2.7.*",
+    "php-amqplib/php-amqplib": "2.9.*",
     "ext-phalcon": ">= 3.0.0"
   },
   "require-dev": {
