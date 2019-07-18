@@ -207,7 +207,7 @@ class RabbitMQ implements Adapter
             $consumerTag,
             false,
             $this->getConfig('no_ack', false),
-            false,
+            $this->getConfig('basic_consume_exclusive', false),
             false,
             [$this, 'callbackWrapper']
         );
