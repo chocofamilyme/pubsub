@@ -89,6 +89,8 @@ class EventPrepare
         $eventModel->routing_key = $route;
         $eventModel->exchange    = $exchange;
         $eventModel->payload = $this->modelSerializer->getAttributes($this->model);
+        $eventModel->setModelId($this->model->getId());
+        $eventModel->setModelType(get_class($this->model));
 
         if ($eventModel->save() === false) {
             $messages = $eventModel->getMessages();
