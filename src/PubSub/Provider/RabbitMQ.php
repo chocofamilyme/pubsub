@@ -78,27 +78,32 @@ class RabbitMQ implements Adapter
      *
      * @param array             $config
      * @param RepeaterInterface $repeater
+     *
+     * @throws ConnectionException
      */
     private function __construct(array $config, RepeaterInterface $repeater)
     {
         $this->config   = $config;
         $this->repeater = $repeater;
+
+        $this->connect();
     }
 
     /**
      * @param array             $config
-     *
      * @param RepeaterInterface $repeater
      *
      * @return Adapter
+     * @throws ConnectionException
      */
-    public static function getInstance(array $config, RepeaterInterface $repeater): Adapter
+    final public static function getInstance(array $config, RepeaterInterface $repeater): Adapter
     {
-        if (empty(self::$instance)) {
-            self::$instance = new self($config, $repeater);
+        $class = static::class;
+        if (!isset(self::$instance[$class])) {
+            self::$instance[$class] = new self($config, $repeater);
         }
 
-        return self::$instance;
+        return self::$instance[$class];
     }
 
     public function __destruct()
@@ -145,7 +150,6 @@ class RabbitMQ implements Adapter
      */
     public function publish()
     {
-        $this->connect();
         $this->exchangeDeclare();
 
         $this->currentChannel->basic_publish(
@@ -168,7 +172,6 @@ class RabbitMQ implements Adapter
      */
     public function subscribe($callback, array $params = [], string $consumerTag = '')
     {
-        $this->connect();
         if (empty($params['queue_name'])) {
             throw new ValidateException('Имя очереди обязательный параметр');
         }
@@ -177,16 +180,16 @@ class RabbitMQ implements Adapter
 
         $this->exchangeDeclare();
 
-        $queueName =
-            $this->currentChannel->queue_declare(
-                $params['queue_name'],
-                false,
-                $this->getConfig('durable', true),
-                $this->getConfig('exclusive', false),
-                false,
-                false,
-                new AMQPTable($this->getConfig('queue', []))
-            );
+        $queueName
+            = $this->currentChannel->queue_declare(
+            $params['queue_name'],
+            false,
+            $this->getConfig('durable', true),
+            $this->getConfig('exclusive', false),
+            false,
+            false,
+            new AMQPTable($this->getConfig('queue', []))
+        );
 
         foreach ($this->currentExchange->getRoutes() as $route) {
             $this->currentChannel->queue_bind(
