@@ -12,7 +12,6 @@ use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Wire\AMQPTable;
 
-use Chocofamily\PubSub\RepeaterInterface;
 use Chocofamily\PubSub\Exceptions\RetryException;
 use Chocofamily\PubSub\Exceptions\ValidateException;
 use Chocofamily\PubSub\Provider\RabbitMQ\Message\Output as OutputMessage;
@@ -25,15 +24,11 @@ use Chocofamily\PubSub\Provider\RabbitMQ\Message\Input as InputMessage;
  *
  * @package Chocofamily\PubSub\Provider
  */
-class RabbitMQ implements Adapter
+class RabbitMQ extends AbstractProvider
 {
     const REDELIVERY_COUNT      = 5;
     const CACHE_LIFETIME        = 1800;
     const DEFAULT_EXCHANGE_TYPE = 'topic';
-
-    private static $instance;
-
-    private $config;
 
     /**
      *
@@ -60,56 +55,13 @@ class RabbitMQ implements Adapter
     private $exchanges = [];
     private $channels  = [];
 
-    private $repeater;
-
     /** @var OutputMessage */
     private $message;
-
-    /** @var bool */
-    private $isConnected = false;
 
     /** @var callable */
     private $callback;
 
     private $unacknowledged = 0;
-
-    /**
-     * RabbitMQ constructor.
-     *
-     * @param array             $config
-     * @param RepeaterInterface $repeater
-     *
-     * @throws ConnectionException
-     */
-    private function __construct(array $config, RepeaterInterface $repeater)
-    {
-        $this->config   = $config;
-        $this->repeater = $repeater;
-
-        $this->connect();
-    }
-
-    /**
-     * @param array             $config
-     * @param RepeaterInterface $repeater
-     *
-     * @return Adapter
-     * @throws ConnectionException
-     */
-    final public static function getInstance(array $config, RepeaterInterface $repeater): Adapter
-    {
-        $class = static::class;
-        if (!isset(self::$instance[$class])) {
-            self::$instance[$class] = new self($config, $repeater);
-        }
-
-        return self::$instance[$class];
-    }
-
-    public function __destruct()
-    {
-        $this->disconnect();
-    }
 
     /**
      * @throws ConnectionException
@@ -159,7 +111,6 @@ class RabbitMQ implements Adapter
         );
     }
 
-
     /**
      * Подписка на событие
      *
@@ -180,16 +131,16 @@ class RabbitMQ implements Adapter
 
         $this->exchangeDeclare();
 
-        $queueName
-            = $this->currentChannel->queue_declare(
-            $params['queue_name'],
-            false,
-            $this->getConfig('durable', true),
-            $this->getConfig('exclusive', false),
-            false,
-            false,
-            new AMQPTable($this->getConfig('queue', []))
-        );
+        $queueName =
+            $this->currentChannel->queue_declare(
+                $params['queue_name'],
+                false,
+                $this->getConfig('durable', true),
+                $this->getConfig('exclusive', false),
+                false,
+                false,
+                new AMQPTable($this->getConfig('queue', []))
+            );
 
         foreach ($this->currentExchange->getRoutes() as $route) {
             $this->currentChannel->queue_bind(
@@ -222,7 +173,6 @@ class RabbitMQ implements Adapter
         }
     }
 
-
     /**
      * Объявление точки входа и канала
      */
@@ -245,7 +195,6 @@ class RabbitMQ implements Adapter
         $this->currentChannel = $this->channels[$key];
     }
 
-
     /**
      * @param AMQPMessage $msg
      *
@@ -262,7 +211,6 @@ class RabbitMQ implements Adapter
 
         try {
             call_user_func($this->callback, $message);
-
         } catch (RetryException $e) {
             if ($isNoAck == false) {
                 $repeat = $this->repeater->isRepeatable($message);
@@ -288,7 +236,7 @@ class RabbitMQ implements Adapter
 
     /**
      * @param string|array $route
-     * @param string $exchangeName
+     * @param string       $exchangeName
      */
     public function setCurrentExchange($route, string $exchangeName = '')
     {
@@ -303,7 +251,6 @@ class RabbitMQ implements Adapter
         $this->currentExchange = new Exchange($exchangeName, $route);
     }
 
-
     /**
      * @param array $message
      * @param array $headers
@@ -314,7 +261,6 @@ class RabbitMQ implements Adapter
         $headers        = array_merge($headers, $defaultHeaders);
         $this->message  = new OutputMessage($message, $headers);
     }
-
 
     /**
      * @param string $key
@@ -333,13 +279,5 @@ class RabbitMQ implements Adapter
     public function addConfig(array $params = [])
     {
         $this->config = array_merge($params, $this->config);
-    }
-
-    /**
-     * @return bool
-     */
-    public function isConnected(): bool
-    {
-        return $this->isConnected;
     }
 }
