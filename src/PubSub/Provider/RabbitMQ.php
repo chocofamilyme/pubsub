@@ -12,7 +12,6 @@ use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Wire\AMQPTable;
 
-use Chocofamily\PubSub\RepeaterInterface;
 use Chocofamily\PubSub\Exceptions\RetryException;
 use Chocofamily\PubSub\Exceptions\ValidateException;
 use Chocofamily\PubSub\Provider\RabbitMQ\Message\Output as OutputMessage;
