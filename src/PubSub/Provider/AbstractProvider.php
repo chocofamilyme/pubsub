@@ -1,13 +1,15 @@
 <?php
-/**
- * @package Chocolife.me
- * @author  Kulumbayev Kairzhan <kulumbayev.k@chocolife.kz>
- */
 
 namespace Chocofamily\PubSub\Provider;
 
 use Chocofamily\PubSub\RepeaterInterface;
 
+/**
+ * Class AbstractProvider
+ *
+ * @package Chocofamily\PubSub\Provider
+ * @author  Kulumbayev Kairzhan <kulumbayev.k@chocolife.kz>
+ */
 abstract class AbstractProvider implements Adapter
 {
     /**
