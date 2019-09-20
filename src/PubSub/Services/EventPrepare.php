@@ -49,16 +49,14 @@ class EventPrepare
      * Отправить событие
      *
      * @param        $eventSource
-     *
      * @param string $route
-     *
      * @param array  $headers
-     *
      * @param string $exchange
      *
+     * @return EventModel
      * @throws ErrorException
      */
-    public function up($eventSource, string $route, array $headers = [], string $exchange = '')
+    public function up($eventSource, string $route, array $headers = [], string $exchange = ''): EventModel
     {
         $exchangeName = $this->getExchangeName($route, $exchange);
         $model        = $this->create($route, $exchangeName);
@@ -66,6 +64,8 @@ class EventPrepare
         $eventPublish = new EventPublish($eventSource, $model);
         $eventPublish->setHeaders($headers);
         $eventPublish->publish($model->getRoutingKey(), $model->getExchange());
+
+        return $model;
     }
 
     /**
@@ -76,7 +76,7 @@ class EventPrepare
      *
      * @return EventModel
      */
-    public function create(string $route, string $exchange)
+    public function create(string $route, string $exchange): EventModel
     {
         $transaction = $this->getTransaction();
 

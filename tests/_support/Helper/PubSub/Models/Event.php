@@ -6,6 +6,8 @@
 
 namespace Helper\PubSub\Models;
 
+use Chocofamily\PubSub\Models\ModelInterface;
+
 /**
  * Class Event
  *
@@ -13,7 +15,7 @@ namespace Helper\PubSub\Models;
  *
  * @package Chocofamily\Models
  */
-class Event
+class Event implements ModelInterface
 {
 
     const NEW  = 0;

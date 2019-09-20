@@ -11,7 +11,7 @@ namespace Chocofamily\PubSub\Models;
  *
  * @package Chocofamily\PubSub\Models
  */
-interface ModelInterface extends \Phalcon\Mvc\ModelInterface
+interface ModelInterface
 {
     public function getId();
 }
