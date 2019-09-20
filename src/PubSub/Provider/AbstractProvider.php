@@ -62,9 +62,8 @@ abstract class AbstractProvider implements Adapter
     {
         $class = static::class;
         if (!isset(self::$instance[$class])) {
-            $reflectionClass = new \ReflectionClass($class);
-
-            self::$instance[$class] = $reflectionClass->newInstanceArgs([$config, $repeater]);
+            $instance               = new $class($config, $repeater);
+            self::$instance[$class] = $instance;
         }
 
         return self::$instance[$class];
