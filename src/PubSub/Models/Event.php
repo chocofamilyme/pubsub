@@ -59,6 +59,16 @@ class Event extends \Phalcon\Mvc\Model implements ModelInterface
     public $routing_key;
 
     /**
+     * @var int
+     */
+    public $model_id = null;
+
+    /**
+     * @var string
+     */
+    public $model_type = null;
+
+    /**
      * Returns table name mapped in the model.
      *
      * @codeCoverageIgnore
@@ -193,5 +203,44 @@ class Event extends \Phalcon\Mvc\Model implements ModelInterface
     public function getUpdatedAt(): string
     {
         return $this->updated_at;
+    }
+
+    /**
+     * @return int
+     */
+    public function getModelId(): int
+    {
+        return $this->model_id;
+    }
+
+    /**
+     * @param int $model_id
+     */
+    public function setModelId(int $model_id)
+    {
+        $this->model_id = $model_id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getModelType(): string
+    {
+        return $this->model_type;
+    }
+
+    /**
+     * @param string $model_type
+     */
+    public function setModelType(string $model_type)
+    {
+        if ($this->hasAttribute('model_type')) {
+            $this->model_type = $model_type;
+        }
+    }
+
+    protected function hasAttribute($attribute)
+    {
+        return $this->getModelsMetaData()->hasAttribute($this, $attribute);
     }
 }

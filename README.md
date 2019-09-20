@@ -166,6 +166,8 @@ create table events
 		constraint events_pkey
 			primary key,
 	type smallint not null,
+	model_id int not null,
+	model_type varchar(100) not null,
 	payload json not null,
 	status smallint not null,
 	model_id integer not null,
