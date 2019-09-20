@@ -170,7 +170,6 @@ create table events
 	model_type varchar(100) not null,
 	payload json not null,
 	status smallint not null,
-	model_id integer not null,
 	created_at timestamp default now() not null,
 	updated_at timestamp
 );
