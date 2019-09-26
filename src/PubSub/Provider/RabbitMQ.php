@@ -190,7 +190,7 @@ class RabbitMQ extends AbstractProvider
         $key = $this->currentExchange->getName();
 
         if (isset($this->exchanges[$key]) == false) {
-            $this->channels[$key] = $this->connection->channel($key);
+            $this->channels[$key] = $this->connection->channel();
             $this->channels[$key]->exchange_declare(
                 $this->currentExchange->getName(),
                 $this->getConfig('exchange_type', self::DEFAULT_EXCHANGE_TYPE),
