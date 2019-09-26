@@ -11,6 +11,7 @@ use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Wire\AMQPTable;
+use PhpAmqpLib\Exception\AMQPConnectionClosedException;
 
 use Chocofamily\PubSub\Exceptions\RetryException;
 use Chocofamily\PubSub\Exceptions\ValidateException;
@@ -78,20 +79,16 @@ class RabbitMQ extends AbstractProvider
         } catch (\Exception $e) {
             throw new ConnectionException($e->getMessage(), $e->getCode(), $e);
         }
-
-
-        $this->isConnected = true;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function disconnect()
     {
         if ($this->isConnected()) {
-            foreach ($this->channels as $channel) {
-                $channel->close();
-            }
-
             $this->connection->close();
-            $this->isConnected = false;
+            $this->channels = [];
         }
     }
 
@@ -102,13 +99,21 @@ class RabbitMQ extends AbstractProvider
      */
     public function publish()
     {
-        $this->exchangeDeclare();
-
-        $this->currentChannel->basic_publish(
-            $this->message->getPayload(),
-            $this->currentExchange->getName(),
-            $this->currentExchange->getRoutes()[0]
-        );
+        $try = 1;
+        while ($try++ < static::REDELIVERY_COUNT) {
+            try {
+                $this->exchangeDeclare();
+                $this->currentChannel->basic_publish(
+                    $this->message->getPayload(),
+                    $this->currentExchange->getName(),
+                    $this->currentExchange->getRoutes()[0]
+                );
+            } catch (AMQPConnectionClosedException $e) {
+                $this->connection->reconnect();
+                continue;
+            }
+            break;
+        }
     }
 
     /**
@@ -118,8 +123,8 @@ class RabbitMQ extends AbstractProvider
      * @param array    $params      — Настройки очереди подписчика
      * @param string   $consumerTag — Уникальное имя подписчика
      *
-     * @throws ConnectionException
      * @throws ValidateException
+     * @throws \ErrorException
      */
     public function subscribe($callback, array $params = [], string $consumerTag = '')
     {
@@ -261,6 +266,15 @@ class RabbitMQ extends AbstractProvider
         $headers        = array_merge($headers, $defaultHeaders);
         $this->message  = new OutputMessage($message, $headers);
     }
+
+    /**
+     * @return bool
+     */
+    public function isConnected(): bool
+    {
+        return $this->connection->isConnected();
+    }
+
 
     /**
      * @param string $key
