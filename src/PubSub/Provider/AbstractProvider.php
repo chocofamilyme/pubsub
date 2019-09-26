@@ -18,11 +18,6 @@ abstract class AbstractProvider implements Adapter
     private static $instance;
 
     /**
-     * @var bool $isConnected
-     */
-    protected $isConnected = false;
-
-    /**
      * @var array $config
      */
     protected $config;
@@ -72,8 +67,5 @@ abstract class AbstractProvider implements Adapter
     /**
      * @return bool
      */
-    public function isConnected(): bool
-    {
-        return $this->isConnected;
-    }
+    abstract public function isConnected(): bool;
 }

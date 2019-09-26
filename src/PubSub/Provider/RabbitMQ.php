@@ -79,20 +79,16 @@ class RabbitMQ extends AbstractProvider
         } catch (\Exception $e) {
             throw new ConnectionException($e->getMessage(), $e->getCode(), $e);
         }
-
-
-        $this->isConnected = true;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function disconnect()
     {
         if ($this->isConnected()) {
-            foreach ($this->channels as $channel) {
-                $channel->close();
-            }
-
             $this->connection->close();
-            $this->isConnected = false;
+            $this->channels = [];
         }
     }
 
@@ -113,7 +109,7 @@ class RabbitMQ extends AbstractProvider
                     $this->currentExchange->getRoutes()[0]
                 );
             } catch (AMQPConnectionClosedException $e) {
-                $this->connect();
+                $this->connection->reconnect();
                 continue;
             }
             break;
@@ -270,6 +266,15 @@ class RabbitMQ extends AbstractProvider
         $headers        = array_merge($headers, $defaultHeaders);
         $this->message  = new OutputMessage($message, $headers);
     }
+
+    /**
+     * @return bool
+     */
+    public function isConnected(): bool
+    {
+        return $this->connection->isConnected();
+    }
+
 
     /**
      * @param string $key
