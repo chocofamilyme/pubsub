@@ -103,9 +103,8 @@ class RabbitMQ extends AbstractProvider
      */
     public function publish()
     {
-        $try   = 1;
-        $limit = 5;
-        while ($try++ < $limit) {
+        $try = 1;
+        while ($try++ < static::REDELIVERY_COUNT) {
             try {
                 $this->exchangeDeclare();
                 $this->currentChannel->basic_publish(
