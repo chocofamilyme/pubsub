@@ -11,6 +11,7 @@ use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Wire\AMQPTable;
+use PhpAmqpLib\Exception\AMQPConnectionClosedException;
 
 use Chocofamily\PubSub\Exceptions\RetryException;
 use Chocofamily\PubSub\Exceptions\ValidateException;
@@ -102,13 +103,22 @@ class RabbitMQ extends AbstractProvider
      */
     public function publish()
     {
-        $this->exchangeDeclare();
-
-        $this->currentChannel->basic_publish(
-            $this->message->getPayload(),
-            $this->currentExchange->getName(),
-            $this->currentExchange->getRoutes()[0]
-        );
+        $try   = 1;
+        $limit = 5;
+        while ($try++ < $limit) {
+            try {
+                $this->exchangeDeclare();
+                $this->currentChannel->basic_publish(
+                    $this->message->getPayload(),
+                    $this->currentExchange->getName(),
+                    $this->currentExchange->getRoutes()[0]
+                );
+            } catch (AMQPConnectionClosedException $e) {
+                $this->connect();
+                continue;
+            }
+            break;
+        }
     }
 
     /**
@@ -118,8 +128,8 @@ class RabbitMQ extends AbstractProvider
      * @param array    $params      — Настройки очереди подписчика
      * @param string   $consumerTag — Уникальное имя подписчика
      *
-     * @throws ConnectionException
      * @throws ValidateException
+     * @throws \ErrorException
      */
     public function subscribe($callback, array $params = [], string $consumerTag = '')
     {
@@ -181,7 +191,7 @@ class RabbitMQ extends AbstractProvider
         $key = $this->currentExchange->getName();
 
         if (isset($this->exchanges[$key]) == false) {
-            $this->channels[$key] = $this->connection->channel();
+            $this->channels[$key] = $this->connection->channel($key);
             $this->channels[$key]->exchange_declare(
                 $this->currentExchange->getName(),
                 $this->getConfig('exchange_type', self::DEFAULT_EXCHANGE_TYPE),
