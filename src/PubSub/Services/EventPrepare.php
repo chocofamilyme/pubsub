@@ -75,8 +75,6 @@ class EventPrepare
      * @param string $exchange
      *
      * @return EventModel
-     *
-     * @todo: Вынести транзакции в репозиротий
      */
     public function create(string $route, string $exchange): ModelInterface
     {
