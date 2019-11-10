@@ -51,7 +51,6 @@ abstract class AbstractProvider implements Adapter
      * @param RepeaterInterface $repeater
      *
      * @return Adapter
-     * @throws \ReflectionException
      */
     final public static function getInstance(array $config, RepeaterInterface $repeater): Adapter
     {
@@ -63,9 +62,4 @@ abstract class AbstractProvider implements Adapter
 
         return self::$instance[$class];
     }
-
-    /**
-     * @return bool
-     */
-    abstract public function isConnected(): bool;
 }

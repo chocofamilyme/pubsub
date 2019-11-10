@@ -46,6 +46,11 @@ class Event implements ModelInterface
     /**
      * @var string
      */
+    public $model_type;
+
+    /**
+     * @var string
+     */
     public $created_at;
 
     /**
@@ -122,6 +127,16 @@ class Event implements ModelInterface
     public function getModelId(): int
     {
         return $this->model_id;
+    }
+
+    public function setModelId(int $modelId)
+    {
+        $this->model_id = $modelId;
+    }
+
+    public function getModelType(): string
+    {
+        return $this->model_type;
     }
 
     /**

@@ -7,6 +7,8 @@
 namespace Chocofamily\PubSub\Services;
 
 
+use Chocofamily\PubSub\Models\ModelInterface;
+use Chocofamily\PubSub\Provider\RepeaterDataProviderInterface;
 use DateTime;
 
 /**
@@ -16,20 +18,8 @@ use DateTime;
  */
 class EventRepeater
 {
-    /**
-     * @DateTime
-     */
-    protected $startDate;
-
-    /**
-     * @var
-     */
-    protected $source;
-
-    /**
-     * @var int
-     */
-    protected $limit;
+    /** @var RepeaterDataProviderInterface */
+    protected $provider;
 
     /**
      * @var string
@@ -44,15 +34,11 @@ class EventRepeater
     /**
      * EventRepeater constructor.
      *
-     * @param $startDate
-     * @param $source
-     * @param $limit
+     * @param RepeaterDataProviderInterface $dataProvider
      */
-    public function __construct($source, DateTime $startDate, int $limit = 200)
+    public function __construct(RepeaterDataProviderInterface $dataProvider)
     {
-        $this->source    = $source;
-        $this->startDate = $startDate;
-        $this->limit     = $limit;
+        $this->provider = $dataProvider;
     }
 
     /**
@@ -90,18 +76,20 @@ class EventRepeater
     /**
      * @throws \ErrorException
      */
-    public function reTry()
+    public function retry()
     {
         do {
-            $events = Event::getFailMessage($this->startDate, $this->limit);
+            $provider = $this->provider;
+            $events   = $provider->getData();
+
+            /** @var ModelInterface $event */
             foreach ($events as $event) {
-                $eventPublish = new EventPublish($this->source, $event);
+                $eventPublish = new EventPublish($provider->getSource(), $event);
                 $eventPublish->publish(
-                    $this->checkRouteKey($event->getRoutingKey()),
-                    $this->checkExchange($event->getExchange())
+                    $this->checkRouteKey($event->getRoutingKey()), $this->checkExchange($event->getExchange())
                 );
             }
-        } while (count($events) >= $this->limit);
+        } while (count($events) >= $provider->getLimit());
     }
 
     /**

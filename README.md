@@ -173,6 +173,8 @@ create table events
 	type smallint not null,
 	model_id int not null,
 	model_type varchar(100) not null,
+	exchange   varchar(100) not null,
+	routing_key varchar(100) not null,
 	payload json not null,
 	status smallint not null,
 	created_at timestamp default now() not null,
@@ -241,7 +243,7 @@ use Chocofamily\PubSub\Services\EventRepeater;
 $dateStart = \DateTime::createFromFormat('Y-m-d', '2018-01-01');
 try {
     $event = new EventRepeater($di->get('eventsource'), $dateStart);
-    $event->reTry();
+    $event->retry();
 } catch (\Exception $e) {
     $message = sprintf('%d %s in %s:%s', $e->getCode(), $e->getMessage(), $e->getFile(), $e->getLine());
     $di->get('logger')->error($message);
