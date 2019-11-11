@@ -21,4 +21,6 @@ interface Adapter
     public function setCurrentExchange($route, string $exchangeName = '');
 
     public function addConfig(array $params = []);
+
+    public function isConnected(): bool;
 }

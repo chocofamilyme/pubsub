@@ -76,7 +76,7 @@ class EventPrepare
      *
      * @return EventModel
      */
-    public function create(string $route, string $exchange): EventModel
+    public function create(string $route, string $exchange): ModelInterface
     {
         $transaction = $this->getTransaction();
 

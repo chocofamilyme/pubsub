@@ -1,32 +1,20 @@
 <?php
-/**
- * @package Chocolife.me
- * @author  docxplusgmoon <nurgabylov.d@chocolife.kz>
- */
 
 namespace Helper\PubSub;
 
-use Chocofamily\PubSub\Provider\Adapter;
+use Chocofamily\PubSub\Provider\AbstractProvider;
 
 /**
- * Class DefaultProvider
+ * Class DefaultExtendedProvider
  *
  * @package Helper\PubSub
  */
-class DefaultProvider implements Adapter
+class DefaultExtendedProvider extends AbstractProvider
 {
     public $queue    = [];
     public $exchange = '';
-
-    /**
-     * @var string
-     */
-    public $message = '';
-
-    /**
-     * @var array
-     */
-    public $headers = [];
+    public $message  = '';
+    public $headers  = [];
 
     public function connect()
     {
@@ -68,4 +56,5 @@ class DefaultProvider implements Adapter
     {
         return true;
     }
+
 }
