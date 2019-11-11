@@ -17,7 +17,6 @@ use Chocofamily\PubSub\Models\EventInterface;
  */
 class Event implements EventInterface
 {
-
     const NEW  = 0;
     const SENT = 1;
 
