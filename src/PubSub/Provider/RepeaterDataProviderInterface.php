@@ -11,8 +11,6 @@ use Phalcon\Mvc\Model\ResultsetInterface;
 
 interface RepeaterDataProviderInterface
 {
-    public function __construct(Adapter $adapter, \DateTime $startDate, int $limit);
-
     public function getSource(): Adapter;
 
     public function getStartDate(): \DateTime;
