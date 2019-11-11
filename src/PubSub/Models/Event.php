@@ -13,7 +13,7 @@ namespace Chocofamily\PubSub\Models;
  *
  * @package Chocofamily\Models
  */
-class Event extends \Phalcon\Mvc\Model implements ModelInterface
+class Event extends \Phalcon\Mvc\Model implements EventInterface
 {
     const NEW  = 0;
     const SENT = 1;

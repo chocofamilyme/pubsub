@@ -6,7 +6,7 @@
 
 namespace Helper\PubSub\Models;
 
-use Chocofamily\PubSub\Models\ModelInterface;
+use Chocofamily\PubSub\Models\EventInterface;
 
 /**
  * Class Event
@@ -15,13 +15,13 @@ use Chocofamily\PubSub\Models\ModelInterface;
  *
  * @package Chocofamily\Models
  */
-class Event implements ModelInterface
+class Event implements EventInterface
 {
 
     const NEW  = 0;
     const SENT = 1;
 
-    static public $id = 0;
+    public static $id = 0;
 
     /**
      * @var integer

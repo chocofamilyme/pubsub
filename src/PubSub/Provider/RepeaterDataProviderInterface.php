@@ -13,8 +13,6 @@ interface RepeaterDataProviderInterface
 {
     public function getSource(): Adapter;
 
-    public function getStartDate(): \DateTime;
-
     public function getLimit(): int;
 
     /**

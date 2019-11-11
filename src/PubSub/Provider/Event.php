@@ -32,11 +32,6 @@ class Event implements RepeaterDataProviderInterface
         return $this->queueProvider;
     }
 
-    public function getStartDate(): \DateTime
-    {
-        return $this->startDate;
-    }
-
     public function getLimit(): int
     {
         return $this->limit;
