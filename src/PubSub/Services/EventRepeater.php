@@ -6,7 +6,7 @@
 
 namespace Chocofamily\PubSub\Services;
 
-use Chocofamily\PubSub\Models\ModelInterface;
+use Chocofamily\PubSub\Models\EventInterface;
 use Chocofamily\PubSub\Provider\RepeaterDataProviderInterface;
 
 /**
@@ -80,7 +80,7 @@ class EventRepeater
             $provider = $this->provider;
             $events   = $provider->getData();
 
-            /** @var ModelInterface $event */
+            /** @var EventInterface $event */
             foreach ($events as $event) {
                 $eventPublish = new EventPublish($provider->getSource(), $event);
                 $eventPublish->publish(
