@@ -1,16 +1,14 @@
 <?php
+/**
+ * @package Chocolife.me
+ * @author  Kulumbayev Kairzhan <kulumbayev.k@chocolife.kz>
+ */
 
 namespace Chocofamily\PubSub\Provider;
 
 use \Chocofamily\PubSub\Services\Event as EventRepository;
 use Phalcon\Mvc\Model\ResultsetInterface;
 
-/**
- * Class Event
- *
- * @package Chocofamily\PubSub\Provider
- * @author  Kulumbayev Kairzhan <kulumbayev.k@chocolife.kz>
- */
 class Event implements RepeaterDataProviderInterface
 {
     /** @var Adapter */
@@ -43,5 +41,4 @@ class Event implements RepeaterDataProviderInterface
     {
         return EventRepository::getFailMessage($this->startDate, $this->limit);
     }
-
 }

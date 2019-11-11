@@ -6,10 +6,8 @@
 
 namespace Chocofamily\PubSub\Services;
 
-
 use Chocofamily\PubSub\Models\ModelInterface;
 use Chocofamily\PubSub\Provider\RepeaterDataProviderInterface;
-use DateTime;
 
 /**
  * Class EventRepeater
