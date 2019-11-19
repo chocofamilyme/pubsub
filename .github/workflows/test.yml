@@ -12,9 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v1
 
-      - name: Install bsmath
-        run: apk --no-cache add php7-bcmath
-
       - name: Get composer
         run: |
             curl -sS https://getcomposer.org/installer -o composer-setup.php
@@ -24,7 +21,7 @@ jobs:
         run: composer validate
 
       - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
+        run: composer install --prefer-dist --no-progress --no-suggest -ignore-platform-reqs
 
       - name: Run test suite
         run: composer run-script test
