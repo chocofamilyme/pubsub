@@ -45,6 +45,8 @@ composer require chocofamilyme/pubsub
 ...
 ```
 
+Полный список смотрите - https://github.com/php-amqplib/php-amqplib
+
 #### Добавляем брокер в DI контейнер
 
 ```php
