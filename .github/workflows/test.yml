@@ -8,8 +8,6 @@ jobs:
 
     container:
       image: mileschou/phalcon:7.3-alpine
-      volumes:
-        - /srv/app:/
 
     steps:
       - uses: actions/checkout@v1
