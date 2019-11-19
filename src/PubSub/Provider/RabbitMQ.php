@@ -98,6 +98,10 @@ class RabbitMQ extends AbstractProvider
     {
         if ($this->isConnected()) {
             $this->connection->close();
+            /** @var AMQPChannel $channel */
+            foreach ($this->channels as $channel) {
+                $channel->close();
+            }
             $this->channels = [];
         }
     }
