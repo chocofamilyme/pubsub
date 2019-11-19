@@ -39,6 +39,8 @@ abstract class AbstractProvider implements Adapter
         $this->repeater = $repeater;
 
         $this->connect();
+
+        register_shutdown_function([$this, 'disconnect']);
     }
 
     public function __destruct()
