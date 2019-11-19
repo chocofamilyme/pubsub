@@ -11,10 +11,10 @@ jobs:
       - uses: docker://mileschou/phalcon:7.3-alpine
 
       - name: Validate composer.json and composer.lock
-        run: composer validate
+        run: php -m
 
-      - name: Install dependencies
-        run: composer install --prefer-dist --no-progress --no-suggest
-
-      - name: Run tests
-        run: composer run-script test
+#      - name: Install dependencies
+#        run: composer install --prefer-dist --no-progress --no-suggest
+#
+#      - name: Run tests
+#        run: composer run-script test
