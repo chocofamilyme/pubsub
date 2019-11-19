@@ -32,5 +32,8 @@
     "psr-4": {
       "Chocofamily\\": "src/"
     }
+  },
+  "scripts": {
+    "test": "php vendor/bin/codecept run"
   }
 }
