@@ -4,13 +4,22 @@ on: [push]
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    container:
+      image: mileschou/phalcon:7.3-alpine
+      volumes:
+        - /srv/app:/
 
     steps:
       - uses: actions/checkout@v1
 
-      - name: Run tests
-        uses: docker://mileschou/phalcon:7.3-alpine
-        run: |
-          composer install --prefer-dist --no-progress --no-suggest
-          composer run-script test
+      - name: Validate composer.json and composer.lock
+        run: composer validate
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: Run test suite
+        run: composer run-script test
+
+
+
