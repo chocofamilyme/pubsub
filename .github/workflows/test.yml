@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: mileschou/phalcon:7.3-alpine
+      image: dphalconphp/php:alpine-php7-min
 
     steps:
       - uses: actions/checkout@v1
