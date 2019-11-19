@@ -7,10 +7,13 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: dphalconphp/php:alpine-php7-min
+      image: mileschou/phalcon:7.3-alpine
 
     steps:
       - uses: actions/checkout@v1
+
+      - name: Install bsmath
+        run: apk --no-cache add php7-bcmath
 
       - name: Get composer
         run: |
