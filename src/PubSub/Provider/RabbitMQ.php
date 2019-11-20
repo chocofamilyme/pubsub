@@ -97,12 +97,12 @@ class RabbitMQ extends AbstractProvider
     public function disconnect()
     {
         if ($this->isConnected()) {
-            $this->connection->close();
             /** @var AMQPChannel $channel */
             foreach ($this->channels as $channel) {
                 $channel->close();
             }
             $this->channels = [];
+            $this->connection->close();
         }
     }
 
@@ -186,6 +186,15 @@ class RabbitMQ extends AbstractProvider
         );
 
         $this->callback = $callback;
+
+        register_shutdown_function([$this, 'disconnect']);
+
+        if (function_exists('pcntl_signal')) {
+            pcntl_signal(SIGTERM, function ($signal) {
+                $this->disconnect();
+                fwrite(STDERR, "Broker connection close".PHP_EOL);
+            });
+        }
 
         while (count($this->currentChannel->callbacks)) {
             $this->currentChannel->wait();
