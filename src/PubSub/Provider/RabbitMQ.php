@@ -11,7 +11,7 @@ use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Wire\AMQPTable;
-use PhpAmqpLib\Exception\AMQPConnectionClosedException;
+use PhpAmqpLib\Exception\AMQPRuntimeException;
 
 use Chocofamily\PubSub\Exceptions\RetryException;
 use Chocofamily\PubSub\Exceptions\ValidateException;
@@ -97,11 +97,7 @@ class RabbitMQ extends AbstractProvider
     public function disconnect()
     {
         if ($this->isConnected()) {
-            /** @var AMQPChannel $channel */
-            foreach ($this->channels as $channel) {
-                $channel->close();
-            }
-            $this->channels = [];
+            $this->clear();
             $this->connection->close();
         }
     }
@@ -109,7 +105,6 @@ class RabbitMQ extends AbstractProvider
     /**
      * Опубликовать сообщение
      *
-     * @throws ConnectionException
      */
     public function publish()
     {
@@ -122,7 +117,8 @@ class RabbitMQ extends AbstractProvider
                     $this->currentExchange->getName(),
                     $this->currentExchange->getRoutes()[0]
                 );
-            } catch (AMQPConnectionClosedException $e) {
+            } catch (AMQPRuntimeException $e) {
+                $this->clear();
                 $this->connection->reconnect();
                 continue;
             }
@@ -316,5 +312,14 @@ class RabbitMQ extends AbstractProvider
     public function addConfig(array $params = [])
     {
         $this->config = array_merge($params, $this->config);
+    }
+
+    /**
+     * Очистить
+     */
+    private function clear()
+    {
+        $this->exchanges = [];
+        $this->channels  = [];
     }
 }
