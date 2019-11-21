@@ -63,7 +63,10 @@ class EventPrepare
 
         $eventPublish = new EventPublish($eventSource, $model);
         $eventPublish->setHeaders($headers);
-        $eventPublish->publish($model->getRoutingKey(), $model->getExchange());
+
+        try {
+            $eventPublish->publish($model->getRoutingKey(), $model->getExchange());
+        } catch (\Throwable $e) {}
 
         return $model;
     }
