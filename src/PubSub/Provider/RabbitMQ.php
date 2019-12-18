@@ -47,9 +47,6 @@ class RabbitMQ extends AbstractProvider
     /** @var AMQPStreamConnection */
     private $connection;
 
-    /** @var AMQPChannel */
-    private $currentChannel;
-
     /** @var Exchange */
     private $currentExchange;
 
@@ -111,8 +108,8 @@ class RabbitMQ extends AbstractProvider
         $try = 1;
         while ($try++ < static::REDELIVERY_COUNT) {
             try {
-                $this->exchangeDeclare();
-                $this->currentChannel->basic_publish(
+                $channel = $this->exchangeDeclare();
+                $channel->basic_publish(
                     $this->message->getPayload(),
                     $this->currentExchange->getName(),
                     $this->currentExchange->getRoutes()[0]
@@ -144,34 +141,34 @@ class RabbitMQ extends AbstractProvider
 
         $this->addConfig($params);
 
-        $this->exchangeDeclare();
+        /** @var AMQPChannel $channel */
+        $channel = $this->exchangeDeclare();
 
-        $queueName =
-            $this->currentChannel->queue_declare(
-                $params['queue_name'],
-                false,
-                $this->getConfig('durable', true),
-                $this->getConfig('exclusive', false),
-                false,
-                false,
-                new AMQPTable($this->getConfig('queue', []))
-            );
+        $queueName = $channel->queue_declare(
+            $params['queue_name'],
+            false,
+            $this->getConfig('durable', true),
+            $this->getConfig('exclusive', false),
+            false,
+            false,
+            new AMQPTable($this->getConfig('queue', []))
+        );
 
         foreach ($this->currentExchange->getRoutes() as $route) {
-            $this->currentChannel->queue_bind(
+            $channel->queue_bind(
                 $queueName[0],
                 $this->currentExchange->getName(),
                 $route
             );
         }
 
-        $this->currentChannel->basic_qos(
+        $channel->basic_qos(
             null,
             $this->getConfig('prefetch_count', 1),
             null
         );
 
-        $this->currentChannel->basic_consume(
+        $channel->basic_consume(
             $queueName[0],
             $consumerTag,
             false,
@@ -192,8 +189,8 @@ class RabbitMQ extends AbstractProvider
             });
         }
 
-        while (count($this->currentChannel->callbacks)) {
-            $this->currentChannel->wait();
+        while (count($channel->callbacks)) {
+            $channel->wait();
         }
     }
 
@@ -216,7 +213,7 @@ class RabbitMQ extends AbstractProvider
             $this->exchanges[$this->currentExchange->getName()] = true;
         }
 
-        $this->currentChannel = $this->channels[$key];
+        return $this->channels[$key];
     }
 
     /**

@@ -3,6 +3,7 @@
 namespace Unit\Provider;
 
 use Chocofamily\PubSub\Provider\AbstractProvider;
+use Chocofamily\PubSub\Provider\RabbitMQ;
 use Chocofamily\PubSub\Repeater;
 use Helper\PubSub\DefaultExtendedProvider;
 use Phalcon\Cache\Backend\Libmemcached;
@@ -30,19 +31,5 @@ class ProviderCest
         $testProvider = DefaultExtendedProvider::getInstance([], new Repeater($cache));
 
         $I->assertEquals(get_class($testProvider), DefaultExtendedProvider::class);
-
-        $class    = new \ReflectionClass(AbstractProvider::class);
-        $property = $class->getProperty('instance');
-        $property->setAccessible(true);
-
-        $multiton = $property->getValue($testProvider);
-
-        $I->assertIsArray($multiton, 'Instance is not array');
-
-        $I->assertEquals(count($multiton), 1);
-
-        $I->assertArrayHasKey(DefaultExtendedProvider::class, $multiton);
-
-        $I->assertEquals($testProvider, $multiton[DefaultExtendedProvider::class]);
     }
 }

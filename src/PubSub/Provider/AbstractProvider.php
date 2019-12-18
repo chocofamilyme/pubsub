@@ -13,11 +13,6 @@ use Chocofamily\PubSub\RepeaterInterface;
 abstract class AbstractProvider implements Adapter
 {
     /**
-     * @var array $instance
-     */
-    private static $instance;
-
-    /**
      * @var array $config
      */
     protected $config;
@@ -55,11 +50,7 @@ abstract class AbstractProvider implements Adapter
     final public static function getInstance(array $config, RepeaterInterface $repeater): Adapter
     {
         $class = static::class;
-        if (!isset(self::$instance[$class])) {
-            $instance               = new $class($config, $repeater);
-            self::$instance[$class] = $instance;
-        }
 
-        return self::$instance[$class];
+        return new $class($config, $repeater);
     }
 }
