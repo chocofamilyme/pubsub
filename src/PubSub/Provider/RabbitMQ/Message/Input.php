@@ -29,15 +29,15 @@ class Input implements Message
         $this->body = \json_decode($message->body, true);
     }
 
-    public function getPayload(): array
+    public function getPayload()
     {
         return $this->body;
     }
 
 
-    public function getHeader(string $key, $default = null)
+    public function getHeader($key, $default = null)
     {
-        return $this->headers[$key] ?? $default;
+        return $this->headers[$key] ?: $default;
     }
 
     public function getHeaders()

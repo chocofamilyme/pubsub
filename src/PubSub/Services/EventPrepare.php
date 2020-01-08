@@ -37,7 +37,7 @@ class EventPrepare
 
     private $transaction;
 
-    public function __construct(ModelInterface $model, SerializerInterface $modelSerializer, int $eventType)
+    public function __construct(ModelInterface $model, SerializerInterface $modelSerializer, $eventType)
     {
         $this->model              = $model;
         $this->modelSerializer    = $modelSerializer;
@@ -56,7 +56,7 @@ class EventPrepare
      * @return EventModel
      * @throws ErrorException
      */
-    public function up($eventSource, string $route, array $headers = [], string $exchange = ''): EventModel
+    public function up($eventSource, $route, array $headers = [], $exchange = '')
     {
         $exchangeName = $this->getExchangeName($route, $exchange);
         $model        = $this->create($route, $exchangeName);
@@ -77,9 +77,9 @@ class EventPrepare
      * @param string $route
      * @param string $exchange
      *
-     * @return EventModel
+     * @return ModelInterface
      */
-    public function create(string $route, string $exchange): ModelInterface
+    public function create($route, $exchange)
     {
         $transaction = $this->getTransaction();
 

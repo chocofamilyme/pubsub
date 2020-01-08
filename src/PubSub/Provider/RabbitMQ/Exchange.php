@@ -15,14 +15,13 @@ namespace Chocofamily\PubSub\Provider\RabbitMQ;
  */
 class Exchange
 {
-
     /** @var string */
     private $name;
 
     /** @var array */
     private $routes = [];
 
-    public function __construct(string $name, array $routes)
+    public function __construct($name, array $routes)
     {
         $this->name   = $name;
         $this->routes = $routes;
@@ -31,7 +30,7 @@ class Exchange
     /**
      * @return mixed
      */
-    public function getName(): string
+    public function getName()
     {
         return $this->name;
     }
@@ -39,7 +38,7 @@ class Exchange
     /**
      * @return array
      */
-    public function getRoutes(): array
+    public function getRoutes()
     {
         return $this->routes;
     }

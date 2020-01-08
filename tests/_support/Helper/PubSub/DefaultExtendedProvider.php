@@ -34,7 +34,7 @@ class DefaultExtendedProvider extends AbstractProvider
         $this->queue[$this->exchange] = $data;
     }
 
-    public function subscribe($callback, array $params = [], string $consumerTag = '')
+    public function subscribe($callback, array $params = [], $consumerTag = '')
     {
     }
 
@@ -43,7 +43,7 @@ class DefaultExtendedProvider extends AbstractProvider
         $this->message = \json_encode($message, JSON_UNESCAPED_UNICODE);
     }
 
-    public function setCurrentExchange($route, string $exchangeName = '')
+    public function setCurrentExchange($route, $exchangeName = '')
     {
         $this->exchange = $route;
     }
@@ -52,9 +52,8 @@ class DefaultExtendedProvider extends AbstractProvider
     {
     }
 
-    public function isConnected(): bool
+    public function isConnected()
     {
         return true;
     }
-
 }

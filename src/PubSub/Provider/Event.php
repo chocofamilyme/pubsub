@@ -7,11 +7,10 @@
 namespace Chocofamily\PubSub\Provider;
 
 use \Chocofamily\PubSub\Services\Event as EventRepository;
-use Phalcon\Mvc\Model\ResultsetInterface;
 
 class Event implements RepeaterDataProviderInterface
 {
-    /** @var Adapter */
+    /** @var ProviderInterface */
     private $queueProvider;
 
     /** @var \DateTime */
@@ -20,24 +19,24 @@ class Event implements RepeaterDataProviderInterface
     /** @var int */
     private $limit;
 
-    public function __construct(Adapter $adapter, \DateTime $startDate, int $limit = 200)
+    public function __construct(ProviderInterface $adapter, \DateTime $startDate, $limit = 200)
     {
         $this->queueProvider = $adapter;
         $this->startDate     = $startDate;
         $this->limit         = $limit;
     }
 
-    public function getSource(): Adapter
+    public function getSource()
     {
         return $this->queueProvider;
     }
 
-    public function getLimit(): int
+    public function getLimit()
     {
         return $this->limit;
     }
 
-    public function getData(): ResultsetInterface
+    public function getData()
     {
         return EventRepository::getFailMessage($this->startDate, $this->limit);
     }

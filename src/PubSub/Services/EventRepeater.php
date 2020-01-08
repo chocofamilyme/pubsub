@@ -50,7 +50,7 @@ class EventRepeater
     /**
      * @param string $defaultExchange
      */
-    public function setDefaultExchange(string $defaultExchange)
+    public function setDefaultExchange($defaultExchange)
     {
         $this->defaultExchange = $defaultExchange;
     }
@@ -66,7 +66,7 @@ class EventRepeater
     /**
      * @param string $defaultRoute
      */
-    public function setDefaultRoute(string $defaultRoute)
+    public function setDefaultRoute($defaultRoute)
     {
         $this->defaultRoute = $defaultRoute;
     }
@@ -95,7 +95,7 @@ class EventRepeater
      *
      * @return string
      */
-    private function checkExchange(string $exchange): string
+    private function checkExchange($exchange)
     {
         return empty($exchange) ? $this->defaultExchange : $exchange;
     }
@@ -105,7 +105,7 @@ class EventRepeater
      *
      * @return string
      */
-    private function checkRouteKey(string $routeKey): string
+    private function checkRouteKey($routeKey)
     {
         return empty($routeKey) ? $this->defaultRoute : $routeKey;
     }

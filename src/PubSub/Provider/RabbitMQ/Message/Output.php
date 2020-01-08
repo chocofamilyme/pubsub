@@ -38,7 +38,7 @@ class Output implements \Chocofamily\PubSub\Message
     /**
      * @return mixed
      */
-    private function getBody(): array
+    private function getBody()
     {
         return $this->body;
     }
@@ -51,15 +51,15 @@ class Output implements \Chocofamily\PubSub\Message
         $this->body = $body;
     }
 
-    public function getHeader(string $key, $default = null)
+    public function getHeader($key, $default = null)
     {
-        return $this->headers[$key] ?? $default;
+        return $this->headers[$key] ?: $default;
     }
 
     /**
      * @return AMQPMessage
      */
-    public function getPayload(): AMQPMessage
+    public function getPayload()
     {
         return $this->payload;
     }

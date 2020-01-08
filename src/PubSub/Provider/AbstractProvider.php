@@ -10,7 +10,7 @@ use Chocofamily\PubSub\RepeaterInterface;
  * @package Chocofamily\PubSub\Provider
  * @author  Kulumbayev Kairzhan <kulumbayev.k@chocolife.kz>
  */
-abstract class AbstractProvider implements Adapter
+abstract class AbstractProvider implements ProviderInterface
 {
     /**
      * @var array $config
@@ -45,12 +45,10 @@ abstract class AbstractProvider implements Adapter
      * @param array             $config
      * @param RepeaterInterface $repeater
      *
-     * @return Adapter
+     * @return ProviderInterface
      */
-    final public static function getInstance(array $config, RepeaterInterface $repeater): Adapter
+    final public static function getInstance(array $config, RepeaterInterface $repeater)
     {
-        $class = static::class;
-
-        return new $class($config, $repeater);
+        return new static($config, $repeater);
     }
 }

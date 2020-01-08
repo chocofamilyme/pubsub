@@ -13,5 +13,5 @@ interface RepeaterInterface
      *
      * @return bool
      */
-    public function isRepeatable(Message $inputMessage): bool;
+    public function isRepeatable(Message $inputMessage);
 }

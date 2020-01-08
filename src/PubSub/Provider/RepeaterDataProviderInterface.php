@@ -6,17 +6,20 @@
 
 namespace Chocofamily\PubSub\Provider;
 
-use Chocofamily\PubSub\Models\ModelInterface;
-use Phalcon\Mvc\Model\ResultsetInterface;
-
 interface RepeaterDataProviderInterface
 {
-    public function getSource(): Adapter;
-
-    public function getLimit(): int;
+    /**
+     * @return ProviderInterface
+     */
+    public function getSource();
 
     /**
-     * @return ModelInterface[]|ResultsetInterface
+     * @return int
      */
-    public function getData(): ResultsetInterface;
+    public function getLimit();
+
+    /**
+     * @return mixed
+     */
+    public function getData();
 }

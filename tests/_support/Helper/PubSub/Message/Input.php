@@ -20,9 +20,9 @@ class Input implements Message
         $this->body = $body;
     }
 
-    public function getHeader(string $key, $default = null)
+    public function getHeader($key, $default = null)
     {
-        return $this->headers[$key] ?? $default;
+        return $this->headers[$key] ?: $default;
     }
 
     public function getPayload()

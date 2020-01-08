@@ -6,7 +6,7 @@
 
 namespace Chocofamily\PubSub\Provider;
 
-interface Adapter
+interface ProviderInterface
 {
     public function connect();
 
@@ -14,13 +14,13 @@ interface Adapter
 
     public function publish();
 
-    public function subscribe($callback, array $params = [], string $consumerTag = '');
+    public function subscribe($callback, array $params = [], $consumerTag = '');
 
     public function setMessage(array $message, array $headers = []);
 
-    public function setCurrentExchange($route, string $exchangeName = '');
+    public function setCurrentExchange($route, $exchangeName = '');
 
     public function addConfig(array $params = []);
 
-    public function isConnected(): bool;
+    public function isConnected();
 }

@@ -10,7 +10,7 @@ interface Message
 {
     public function getPayload();
 
-    public function getHeader(string $key, $default = null);
+    public function getHeader($key, $default = null);
 
     public function getHeaders();
 }

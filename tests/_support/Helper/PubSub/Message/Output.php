@@ -14,9 +14,9 @@ class Output implements Message
 
     public $body = [];
 
-    public function getHeader(string $key = '', $default = null)
+    public function getHeader($key = '', $default = null)
     {
-        return $this->headers[$key] ?? $default;
+        return $this->headers[$key] ?: $default;
     }
 
     public function getPayload()

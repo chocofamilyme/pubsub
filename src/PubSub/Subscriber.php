@@ -8,11 +8,11 @@
 namespace Chocofamily\PubSub;
 
 use Chocofamily\Http\CorrelationId;
-use Chocofamily\PubSub\Provider\Adapter;
+use Chocofamily\PubSub\Provider\ProviderInterface;
 
 class Subscriber
 {
-    /** @var Adapter */
+    /** @var ProviderInterface */
     private $provider;
 
     /** @var string */
@@ -33,18 +33,18 @@ class Subscriber
     /**
      * Subscriber constructor.
      *
-     * @param Adapter      $provider
-     * @param string|array $routes
-     * @param array        $params
-     * @param string       $consumerTag
-     * @param string       $exchangeName
+     * @param ProviderInterface $provider
+     * @param string|array      $routes
+     * @param array             $params
+     * @param string            $consumerTag
+     * @param string            $exchangeName
      */
     public function __construct(
-        Adapter $provider,
+        ProviderInterface $provider,
         $routes,
         array $params = [],
-        string $consumerTag = '',
-        string $exchangeName = ''
+        $consumerTag = '',
+        $exchangeName = ''
     ) {
         $this->provider     = $provider;
         $this->routes       = $routes;

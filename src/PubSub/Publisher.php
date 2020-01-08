@@ -7,23 +7,20 @@
 
 namespace Chocofamily\PubSub;
 
-use Chocofamily\Http\CorrelationId;
-use Chocofamily\PubSub\Provider\Adapter;
+use Chocofamily\PubSub\Provider\ProviderInterface;
 
 class Publisher
 {
-    /** @var Adapter */
+    /** @var ProviderInterface */
     private $provider;
 
+    /** @var array  */
     private $headers = [];
 
-    public function __construct(Adapter $provider, array $params = [])
+    public function __construct(ProviderInterface $provider, array $params = [])
     {
         $this->provider = $provider;
         $this->provider->addConfig($params);
-
-        $this->headers['correlation_id']                 = CorrelationId::getInstance()->getCorrelationId();
-        $this->headers['application_headers']['span_id'] = CorrelationId::getInstance()->getNextSpanId();
     }
 
     /**
@@ -31,15 +28,16 @@ class Publisher
      * @param string $route
      * @param string $exchange
      */
-    public function send(array $message, string $route, string $exchange = '')
+    public function send(array $message, $route, $exchange = '')
     {
         $this->provider->setMessage($message, $this->headers);
-
         $this->provider->setCurrentExchange($route, $exchange);
-
         $this->provider->publish();
     }
 
+    /**
+     * @param array $headers
+     */
     public function setHeader(array $headers)
     {
         if (isset($headers['application_headers'])) {
@@ -52,7 +50,10 @@ class Publisher
         $this->headers = array_merge($headers, $this->headers);
     }
 
-    public function getHeader(): array
+    /**
+     * @return array
+     */
+    public function getHeader()
     {
         return $this->headers;
     }

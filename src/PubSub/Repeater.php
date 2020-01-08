@@ -6,17 +6,22 @@
 
 namespace Chocofamily\PubSub;
 
-use \Phalcon\Cache\BackendInterface as Cache;
-
+/**
+ * Class Repeater
+ *
+ * @package Chocofamily\PubSub
+ */
 class Repeater implements RepeaterInterface
 {
     const REDELIVERY_COUNT = 5;
     const CACHE_LIFETIME   = 1800;
 
-    /** @var \Phalcon\Cache\BackendInterface */
+    /**
+     * @var CacheInterface
+     */
     private $cache;
 
-    public function __construct(Cache $cache)
+    public function __construct(CacheInterface $cache)
     {
         $this->cache = $cache;
     }
@@ -26,7 +31,7 @@ class Repeater implements RepeaterInterface
      *
      * @return bool
      */
-    public function isRepeatable(Message $inputMessage): bool
+    public function isRepeatable(Message $inputMessage)
     {
         $key = $this->getCacheKey($inputMessage);
 
@@ -38,7 +43,7 @@ class Repeater implements RepeaterInterface
 
         $redeliveryCount++;
 
-        $this->cache->save($key, $redeliveryCount, self::CACHE_LIFETIME);
+        $this->cache->set($key, $redeliveryCount, self::CACHE_LIFETIME);
 
         return ($redeliveryCount <= self::REDELIVERY_COUNT);
     }
@@ -48,7 +53,7 @@ class Repeater implements RepeaterInterface
      *
      * @return string
      */
-    public function getCacheKey(Message $inputMessage) : string
+    public function getCacheKey(Message $inputMessage)
     {
         return 'ev_'.$inputMessage->getHeader('app_id').'_'.$inputMessage->getHeader('message_id');
     }

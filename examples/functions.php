@@ -1,8 +1,9 @@
 <?php
-use Phalcon\Cache\Frontend\Data;
-use Phalcon\Cache\Backend\Libmemcached;
+
 use Chocofamily\PubSub\Provider\RabbitMQ;
 use Chocofamily\PubSub\Repeater;
+
+class MemcachedCache extends \Memcached implements \Chocofamily\PubSub\CacheInterface {}
 
 function getCacheInstance()
 {
@@ -17,12 +18,14 @@ function getCacheInstance()
         'prefix'   => 'restapi_cache_',
         'cacheDir' => '../storage/cache',
     ];
-    return new Libmemcached(
-        new Data(['lifetime' => 86400]),
-        $cacheConfig
-    );
-}
 
+    $cache = new MemcachedCache();
+    if (empty($cache->getServerList())) {
+        $cache->addServer('localhost', 11211);
+    }
+
+    return $cache;
+}
 
 function getProvider()
 {

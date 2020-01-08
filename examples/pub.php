@@ -4,6 +4,8 @@ require_once 'functions.php';
 
 use Chocofamily\PubSub\Publisher;
 
+error_reporting(E_WARNING);
+
 $publisher = new Publisher(getProvider());
 
 $payload = [

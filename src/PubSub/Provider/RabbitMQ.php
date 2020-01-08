@@ -72,16 +72,16 @@ class RabbitMQ extends AbstractProvider
                 $this->config['port'],
                 $this->config['user'],
                 $this->config['password'],
-                $vhost = $this->config['vhost'] ?? '/',
-                $insist = $this->config['insist'] ?? false,
+                $vhost = $this->config['vhost'] ?: '/',
+                $insist = $this->config['insist'] ?: false,
                 $login_method = 'AMQPLAIN',
-                $login_response = $this->config['login_response'] ?? null,
-                $locale = $this->config['locale'] ?? 'en_US',
-                $connection_timeout = $this->config['connection_timeout'] ?? 3.0,
-                $read_write_timeout = $this->config['read_write_timeout'] ?? 3.0,
-                $context = $this->config['context'] ?? null,
-                $keepalive = $this->config['keepalive'] ?? false,
-                $heartbeat = $this->config['heartbeat'] ?? 0
+                $login_response = $this->config['login_response'] ?: null,
+                $locale = $this->config['locale'] ?: 'en_US',
+                $connection_timeout = $this->config['connection_timeout'] ?: 3.0,
+                $read_write_timeout = $this->config['read_write_timeout'] ?: 3.0,
+                $context = $this->config['context'] ?: null,
+                $keepalive = $this->config['keepalive'] ?: false,
+                $heartbeat = $this->config['heartbeat'] ?: 0
             );
         } catch (\Exception $e) {
             throw new ConnectionException($e->getMessage(), $e->getCode(), $e);
@@ -133,7 +133,7 @@ class RabbitMQ extends AbstractProvider
      * @throws ValidateException
      * @throws \ErrorException
      */
-    public function subscribe($callback, array $params = [], string $consumerTag = '')
+    public function subscribe($callback, array $params = [], $consumerTag = '')
     {
         if (empty($params['queue_name'])) {
             throw new ValidateException('Имя очереди обязательный параметр');
@@ -259,7 +259,7 @@ class RabbitMQ extends AbstractProvider
      * @param string|array $route
      * @param string       $exchangeName
      */
-    public function setCurrentExchange($route, string $exchangeName = '')
+    public function setCurrentExchange($route, $exchangeName = '')
     {
         if (false == is_array($route)) {
             $route = [$route];
@@ -286,7 +286,7 @@ class RabbitMQ extends AbstractProvider
     /**
      * @return bool
      */
-    public function isConnected(): bool
+    public function isConnected()
     {
         return $this->connection->isConnected();
     }
@@ -298,7 +298,7 @@ class RabbitMQ extends AbstractProvider
      *
      * @return mixed
      */
-    private function getConfig(string $key, $default = '')
+    private function getConfig($key, $default = '')
     {
         return isset($this->config[$key]) ? $this->config[$key] : $default;
     }

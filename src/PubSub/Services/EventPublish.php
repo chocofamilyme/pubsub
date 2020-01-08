@@ -7,7 +7,7 @@
 namespace Chocofamily\PubSub\Services;
 
 use Chocofamily\PubSub\Models\ModelInterface;
-use Chocofamily\PubSub\Provider\Adapter;
+use Chocofamily\PubSub\Provider\ProviderInterface;
 use Chocofamily\PubSub\Publisher;
 use Chocofamily\PubSub\Services\Event as EventService;
 use ErrorException;
@@ -28,10 +28,10 @@ class EventPublish
     /**
      * EventPublish constructor.
      *
-     * @param  Adapter $eventSource
+     * @param  ProviderInterface   $eventSource
      * @param  ModelInterface|null $model
      */
-    public function __construct(Adapter $eventSource, ?ModelInterface $model = null)
+    public function __construct(ProviderInterface $eventSource, ModelInterface $model = null)
     {
         if ($model) {
             $this->event = new EventService($model);
@@ -63,7 +63,7 @@ class EventPublish
      *
      * @throws ErrorException
      */
-    public function publish(string $route, string $exchangeName = '')
+    public function publish($route, $exchangeName = '')
     {
         $this->publisher->send($this->event->getPayload(), $route, $exchangeName);
         $this->event->setSent();
