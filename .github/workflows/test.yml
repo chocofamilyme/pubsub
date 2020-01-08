@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: mileschou/phalcon:7.3-alpine
+      image: mileschou/phalcon:7.1-alpine
 
     steps:
       - uses: actions/checkout@v1
