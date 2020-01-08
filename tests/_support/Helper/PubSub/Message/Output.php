@@ -14,13 +14,18 @@ class Output implements Message
 
     public $body = [];
 
-    public function getHeader(string $key = '')
+    public function getHeader(string $key = '', $default = null)
     {
-        return isset($this->headers[$key]) ? $this->headers[$key] : $this->headers;
+        return $this->headers[$key] ?? $default;
     }
 
     public function getPayload()
     {
         return $this->body;
+    }
+
+    public function getHeaders()
+    {
+        return $this->headers;
     }
 }

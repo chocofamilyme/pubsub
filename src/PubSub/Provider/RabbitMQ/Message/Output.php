@@ -51,9 +51,9 @@ class Output implements \Chocofamily\PubSub\Message
         $this->body = $body;
     }
 
-    public function getHeader(string $key = '')
+    public function getHeader(string $key, $default = null)
     {
-        return isset($this->headers[$key]) ? $this->headers[$key] : $this->headers;
+        return $this->headers[$key] ?? $default;
     }
 
     /**
@@ -62,5 +62,10 @@ class Output implements \Chocofamily\PubSub\Message
     public function getPayload(): AMQPMessage
     {
         return $this->payload;
+    }
+
+    public function getHeaders()
+    {
+        return $this->headers;
     }
 }

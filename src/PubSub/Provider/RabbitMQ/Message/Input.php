@@ -18,7 +18,7 @@ class Input implements Message
 
     public function __construct(AMQPMessage $message)
     {
-        $this->headers = array_merge(
+        $this->headers                = array_merge(
             $message->get_properties(),
             $message->get('application_headers')->getNativeData()
         );
@@ -35,8 +35,13 @@ class Input implements Message
     }
 
 
-    public function getHeader(string $key = '')
+    public function getHeader(string $key, $default = null)
     {
-        return isset($this->headers[$key]) ? $this->headers[$key] : $this->headers;
+        return $this->headers[$key] ?? $default;
+    }
+
+    public function getHeaders()
+    {
+        return $this->headers;
     }
 }
