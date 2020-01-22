@@ -39,6 +39,7 @@ return [
                         'port'     => 5672,
                         'user'     => 'user',
                         'password' => 'password',
+                        'vhost'    => '/',
                     ],
                 ],
     
