@@ -28,7 +28,7 @@ use Chocofamily\PubSub\Provider\RabbitMQ\Message\Input as InputMessage;
 class RabbitMQ extends AbstractProvider
 {
     const REDELIVERY_COUNT      = 5;
-    const CACHE_LIFETIME        = 1800;
+    const HEARTBEAT             = 60;
     const DEFAULT_EXCHANGE_TYPE = 'topic';
 
     /**
@@ -81,7 +81,7 @@ class RabbitMQ extends AbstractProvider
                 $read_write_timeout = $this->config['read_write_timeout'] ?? 3.0,
                 $context = $this->config['context'] ?? null,
                 $keepalive = $this->config['keepalive'] ?? false,
-                $heartbeat = $this->config['heartbeat'] ?? 0
+                $heartbeat = $this->config['heartbeat'] ?? self::HEARTBEAT
             );
         } catch (\Exception $e) {
             throw new ConnectionException($e->getMessage(), $e->getCode(), $e);
