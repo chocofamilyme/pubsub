@@ -8,6 +8,8 @@ namespace Chocofamily\PubSub\Provider;
 
 use Chocofamily\PubSub\Exceptions\ConnectionException;
 use PhpAmqpLib\Channel\AMQPChannel;
+use PhpAmqpLib\Connection\AbstractConnection;
+use PhpAmqpLib\Connection\AMQPLazyConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Wire\AMQPTable;
@@ -67,22 +69,32 @@ class RabbitMQ extends AbstractProvider
     public function connect()
     {
         try {
-            $this->connection = new AMQPStreamConnection(
-                $this->config['host'],
-                $this->config['port'],
-                $this->config['user'],
-                $this->config['password'],
-                $vhost = $this->config['vhost'] ?? '/',
-                $insist = $this->config['insist'] ?? false,
-                $login_method = 'AMQPLAIN',
-                $login_response = $this->config['login_response'] ?? null,
-                $locale = $this->config['locale'] ?? 'en_US',
-                $connection_timeout = $this->config['connection_timeout'] ?? 3.0,
-                $read_write_timeout = $this->config['read_write_timeout'] ?? 3.0,
-                $context = $this->config['context'] ?? null,
-                $keepalive = $this->config['keepalive'] ?? false,
-                $heartbeat = $this->config['heartbeat'] ?? self::HEARTBEAT
-            );
+            /** @var AbstractConnection $connection */
+            $connection = $this->getConfig('connection', AMQPLazyConnection::class);
+
+            $hosts = $this->getConfig('hosts', [
+                [
+                    'host'     => $this->getConfig('host'),
+                    'port'     => $this->getConfig('port'),
+                    'user'     => $this->getConfig('user'),
+                    'password' => $this->getConfig('password'),
+                    'vhost'    => $this->getConfig('vhost') ?? '/',
+                ],
+            ]);
+
+            $options = [
+                'insist'             => $this->getConfig('insist', false),
+                'login_method'       => $this->getConfig('login_method', 'AMQPLAIN'),
+                'login_response'     => $this->getConfig('login_response', null),
+                'locale'             => $this->getConfig('locale', 'en_US'),
+                'connection_timeout' => $this->getConfig('connection_timeout', 3.0),
+                'read_write_timeout' => $this->getConfig('read_write_timeout', 3.0),
+                'context'            => $this->getConfig('context', null),
+                'keepalive'          => $this->getConfig('keepalive', false),
+                'heartbeat'          => $this->getConfig('heartbeat', self::HEARTBEAT),
+            ];
+
+            $this->connection = $connection::create_connection($hosts, $options);
         } catch (\Exception $e) {
             throw new ConnectionException($e->getMessage(), $e->getCode(), $e);
         }

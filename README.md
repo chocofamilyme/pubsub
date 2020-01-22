@@ -26,23 +26,31 @@ composer require chocofamilyme/pubsub
 
 #### Настройка конфигов
 ```php
-...
-
-'eventsource' => [
-    'default' => env('MESSAGE_BROKER', 'rabbitmq'),
+return [
+    'eventsource' => [
+        'default' => 'rabbitmq',
+        
+        'drivers' => [
+            'rabbitmq' => [
+                'adapter'    => 'RabbitMQ',
+                'hosts' => [
+                    [
+                        'host'     => 'host',
+                        'port'     => 5672,
+                        'user'     => 'user',
+                        'password' => 'password',
+                    ],
+                ],
     
-    'drivers' => [
-        'rabbitmq' => [
-            'adapter'    => 'RabbitMQ',
-            'host'     => env('EVENTSOURCE_HOST', 'eventsource'),
-            'port'     => env('EVENTSOURCE_PORT', '5672'),
-            'user'     => env('EVENTSOURCE_USER', 'guest'),
-            'password' => env('EVENTSOURCE_PASSWORD', 'guest'),
+                // Не объязательные параметры
+                'heartbeat'          => 60,
+                'read_write_timeout' => 60,
+                'connection_timeout' => 60,
+                'wait_timeout'       => 0,
+            ],
         ],
     ],
-]
-
-...
+];
 ```
 
 Полный список смотрите - https://github.com/php-amqplib/php-amqplib
@@ -75,6 +83,7 @@ $di->setShared('eventsource',
 
 | Ключ                      | Значение                  | Описание  |
 | ------------------------- |:------------------------- | :---------|
+| connection                | По умолчанию PhpAmqpLib\Connection\AMQPLazyConnection::class | [php-amqplib](https://github.com/php-amqplib/php-amqplib/tree/master/PhpAmqpLib/Connection) |
 | connection_timeout        | По умолчанию 3.0 (сек)    | Максимальное время на соединение с сервером Rabbitmq  |
 | read_write_timeout        | По умолчанию 3.0 (сек)    | Максимальное время на получение  |
 | heartbeat                 | По умолчанию 60 (сек)     | [RabbitMQ Doc](https://www.rabbitmq.com/heartbeats.html) |
@@ -155,8 +164,8 @@ $params = [
 $taskName = 'your_task_name';
 
 $routeKeys = [
-    'order.created'
-    'order.payed'
+    'order.created',
+    'order.payed',
 ];
 
 $exchange = 'order';
@@ -172,7 +181,7 @@ $subscriber->subscribe(function ($headers, $body) {
 Чтобы обратно отправить сообщение в очередь необходимо в кэлбэк функции кинуть исключение `Chocofamily\PubSub\Exceptions\RetryException`. Сообщение может максимум 5 раз обработаться повторно, после этого он попадает в очередь мертвых сообщений (exchange = DLX). 
 
 В подписчик можно передавать следующие настройки:
-````php
+````
 durable: bool — сохранять на диск данные
 queue: array — настройки самой очереди
 prefetch_count: int — количество предзагрузки сообщений
