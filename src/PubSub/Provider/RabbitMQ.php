@@ -190,7 +190,11 @@ class RabbitMQ extends AbstractProvider
         }
 
         while (count($channel->callbacks)) {
-            $channel->wait();
+            $channel->wait(
+                $this->getConfig('wait_allowed_methods', null),
+                $this->getConfig('wait_non_blockin', false),
+                $this->getConfig('wait_timeout', 0)
+            );
         }
     }
 

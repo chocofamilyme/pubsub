@@ -71,6 +71,27 @@ $di->setShared('eventsource',
 
 Здесь `$cache` объект реализующий интерефейс `Phalcon\Cache\BackendInterface`. Кэш используется для подсчета количества повторной обработки определенного сообщения.
 
+#### Таблица параметров с настройками
+
+| Ключ                      | Значение                  | Описание  |
+| ------------------------- |:------------------------- | :---------|
+| connection_timeout        | По умолчанию 3.0 (сек)    | Максимальное время на соединение с сервером Rabbitmq  |
+| read_write_timeout        | По умолчанию 3.0 (сек)    | Максимальное время на получение  |
+| heartbeat                 | По умолчанию 60 (сек)     | [RabbitMQ Doc](https://www.rabbitmq.com/heartbeats.html) |
+| keepalive                 | По умолчанию false        | [RabbitMQ Doc](https://www.rabbitmq.com/heartbeats.html#tcp-keepalives) |
+| context                   | По умолчанию null         | [RabbitMQ Doc](https://www.rabbitmq.com) |
+| prefetch_count            | По умолчанию 1            | [RabbitMQ Doc](https://www.rabbitmq.com/consumer-prefetch.html) |
+| no_ack                    | По умолчанию false        | [RabbitMQ Doc](https://www.rabbitmq.com/nack.html) |
+| durable                   | По умолчанию true         | [RabbitMQ Doc](https://www.rabbitmq.com/queues.html) |
+| exclusive                 | По умолчанию false        | [RabbitMQ Doc](https://www.rabbitmq.com/queues.html) |
+| queue                     | По умолчанию []           | [RabbitMQ Doc](https://www.rabbitmq.com/resources/specs/amqp0-9-1.pdf) |
+| basic_consume_exclusive   | По умолчанию false        | [RabbitMQ Doc](https://www.rabbitmq.com/consumers.html) |
+| wait_allowed_methods      | По умолчанию null         | [php-amqplib](https://github.com/php-amqplib/php-amqplib/blob/master/PhpAmqpLib/Channel/AbstractChannel.php) |
+| wait_non_blockin          | По умолчанию false        | [php-amqplib](https://github.com/php-amqplib/php-amqplib/blob/master/PhpAmqpLib/Channel/AbstractChannel.php) |
+| wait_timeout              | По умолчанию 0            | Максимальное время ожидания до получения первого сообщения |
+| exchange_type             | По умолчанию topic        | [RabbitMQ Doc](https://www.rabbitmq.com/tutorials/amqp-concepts.html)) |
+| app_id                    | По умолчанию ''           | Индификатор приложения которое создает сообщение |
+
 ### Использование
 
 #### Публикация
@@ -295,5 +316,8 @@ try {
 ````
 
 
+
 @todo
 - Написать интерфейс для транзакций и убрать зависимость от фреймворка
+
+
