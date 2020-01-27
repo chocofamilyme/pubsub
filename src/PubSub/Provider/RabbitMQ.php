@@ -78,7 +78,7 @@ class RabbitMQ extends AbstractProvider
                     'port'     => $this->getConfig('port'),
                     'user'     => $this->getConfig('user'),
                     'password' => $this->getConfig('password'),
-                    'vhost'    => $this->getConfig('vhost') ?? '/',
+                    'vhost'    => $this->getConfig('vhost', '/'),
                 ],
             ]);
 
