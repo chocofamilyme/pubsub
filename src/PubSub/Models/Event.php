@@ -19,7 +19,7 @@ class Event extends \Phalcon\Mvc\Model implements EventInterface
     const SENT = 1;
 
     /**
-     * @var integer
+     * @var mixed
      */
     public $id;
 
@@ -59,7 +59,7 @@ class Event extends \Phalcon\Mvc\Model implements EventInterface
     public $routing_key;
 
     /**
-     * @var int
+     * @var mixed
      */
     public $model_id = null;
 
@@ -142,9 +142,9 @@ class Event extends \Phalcon\Mvc\Model implements EventInterface
     }
 
     /**
-     * @return int
+     * @return mixed
      */
-    public function getId(): int
+    public function getId()
     {
         return $this->id;
     }
@@ -206,17 +206,17 @@ class Event extends \Phalcon\Mvc\Model implements EventInterface
     }
 
     /**
-     * @return int
+     * @return mixed
      */
-    public function getModelId(): int
+    public function getModelId()
     {
         return $this->model_id;
     }
 
     /**
-     * @param int $model_id
+     * @param mixed $model_id
      */
-    public function setModelId(int $model_id)
+    public function setModelId($model_id)
     {
         $this->model_id = $model_id;
     }
