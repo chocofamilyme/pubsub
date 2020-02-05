@@ -128,7 +128,7 @@ class Event implements EventInterface
         return $this->model_id;
     }
 
-    public function setModelId(int $modelId)
+    public function setModelId($modelId)
     {
         $this->model_id = $modelId;
     }

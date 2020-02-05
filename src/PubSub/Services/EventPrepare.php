@@ -6,6 +6,7 @@
 
 namespace Chocofamily\PubSub\Services;
 
+use Chocofamily\PubSub\Models\EventInterface;
 use Chocofamily\PubSub\Models\ModelInterface;
 use ErrorException;
 use Phalcon\Mvc\Model\Transaction\Manager as TxManager;
@@ -53,10 +54,10 @@ class EventPrepare
      * @param array  $headers
      * @param string $exchange
      *
-     * @return EventModel
+     * @return EventInterface
      * @throws ErrorException
      */
-    public function up($eventSource, string $route, array $headers = [], string $exchange = ''): EventModel
+    public function up($eventSource, string $route, array $headers = [], string $exchange = ''): EventInterface
     {
         $exchangeName = $this->getExchangeName($route, $exchange);
         $model        = $this->create($route, $exchangeName);
@@ -66,7 +67,8 @@ class EventPrepare
 
         try {
             $eventPublish->publish($model->getRoutingKey(), $model->getExchange());
-        } catch (\Throwable $e) {}
+        } catch (\Throwable $e) {
+        }
 
         return $model;
     }
@@ -77,9 +79,9 @@ class EventPrepare
      * @param string $route
      * @param string $exchange
      *
-     * @return EventModel
+     * @return EventInterface
      */
-    public function create(string $route, string $exchange): ModelInterface
+    public function create(string $route, string $exchange): EventInterface
     {
         $transaction = $this->getTransaction();
 

@@ -42,19 +42,19 @@ interface EventInterface extends ModelInterface
     public function getCreatedAt(): string;
 
     /**
+     * @return mixed
+     */
+    public function getModelId();
+
+    /**
      * @return string
      */
     public function getUpdatedAt(): string;
 
     /**
-     * @return int
+     * @param mixed $model_id
      */
-    public function getModelId(): int;
-
-    /**
-     * @param int $model_id
-     */
-    public function setModelId(int $model_id);
+    public function setModelId($model_id);
 
     /**
      * @return string
