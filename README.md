@@ -97,10 +97,11 @@ $di->setShared('eventsource',
 | queue                     | По умолчанию []           | [RabbitMQ Doc](https://www.rabbitmq.com/resources/specs/amqp0-9-1.pdf) |
 | basic_consume_exclusive   | По умолчанию false        | [RabbitMQ Doc](https://www.rabbitmq.com/consumers.html) |
 | wait_allowed_methods      | По умолчанию null         | [php-amqplib](https://github.com/php-amqplib/php-amqplib/blob/master/PhpAmqpLib/Channel/AbstractChannel.php) |
-| wait_non_blockin          | По умолчанию false        | [php-amqplib](https://github.com/php-amqplib/php-amqplib/blob/master/PhpAmqpLib/Channel/AbstractChannel.php) |
+| wait_non_blocking         | По умолчанию true         | [php-amqplib](https://github.com/php-amqplib/php-amqplib/blob/master/PhpAmqpLib/Channel/AbstractChannel.php) |
 | wait_timeout              | По умолчанию 0            | Максимальное время ожидания до получения первого сообщения |
 | exchange_type             | По умолчанию topic        | [RabbitMQ Doc](https://www.rabbitmq.com/tutorials/amqp-concepts.html)) |
 | app_id                    | По умолчанию ''           | Индификатор приложения которое создает сообщение |
+| sleep                     | По умолчанию 0.1 секунды  | Если wait_non_blocking равно true, то если нету задачи ждать время sleep|
 
 ### Использование
 
