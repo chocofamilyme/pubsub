@@ -53,7 +53,7 @@ class RabbitMQ extends AbstractProvider
     private $currentExchange;
 
     private $exchanges = [];
-    private $channels  = [];
+    private $channels = [];
 
     /** @var OutputMessage */
     private $message;
@@ -64,6 +64,11 @@ class RabbitMQ extends AbstractProvider
     private $unacknowledged = 0;
 
     /**
+     * @var bool
+     */
+    private $gotJob = false;
+
+    /**
      * @throws ConnectionException
      */
     public function connect()
@@ -72,15 +77,18 @@ class RabbitMQ extends AbstractProvider
             /** @var AbstractConnection $connection */
             $connection = $this->getConfig('connection', AMQPLazyConnection::class);
 
-            $hosts = $this->getConfig('hosts', [
+            $hosts = $this->getConfig(
+                'hosts',
                 [
-                    'host'     => $this->getConfig('host'),
-                    'port'     => $this->getConfig('port'),
-                    'user'     => $this->getConfig('user'),
-                    'password' => $this->getConfig('password'),
-                    'vhost'    => $this->getConfig('vhost', '/'),
-                ],
-            ]);
+                    [
+                        'host'     => $this->getConfig('host'),
+                        'port'     => $this->getConfig('port'),
+                        'user'     => $this->getConfig('user'),
+                        'password' => $this->getConfig('password'),
+                        'vhost'    => $this->getConfig('vhost', '/'),
+                    ],
+                ]
+            );
 
             $options = [
                 'insist'             => $this->getConfig('insist', false),
@@ -151,6 +159,8 @@ class RabbitMQ extends AbstractProvider
             throw new ValidateException('Имя очереди обязательный параметр');
         }
 
+        $this->gotJob = !$this->getConfig('wait_non_blocking', true);
+
         $this->addConfig($params);
 
         /** @var AMQPChannel $channel */
@@ -195,18 +205,43 @@ class RabbitMQ extends AbstractProvider
         register_shutdown_function([$this, 'disconnect']);
 
         if (function_exists('pcntl_signal')) {
-            pcntl_signal(SIGTERM, function ($signal) {
-                $this->disconnect();
-                fwrite(STDERR, "Broker connection close".PHP_EOL);
-            });
+            pcntl_signal(
+                SIGTERM,
+                function ($signal) {
+                    $this->disconnect();
+                    fwrite(STDERR, "Broker connection close" . PHP_EOL);
+                }
+            );
         }
 
         while (count($channel->callbacks)) {
             $channel->wait(
                 $this->getConfig('wait_allowed_methods', null),
-                $this->getConfig('wait_non_blockin', false),
+                $this->getConfig('wait_non_blocking', true),
                 $this->getConfig('wait_timeout', 0)
             );
+
+            if (!$this->gotJob) {
+                $this->sleep($this->getConfig('sleep', 0.1));
+            }
+
+            $this->gotJob = false;
+        }
+    }
+
+    /**
+     * Sleep the script for a given number of seconds.
+     *
+     * @param int|float $seconds
+     *
+     * @return void
+     */
+    public function sleep($seconds)
+    {
+        if ($seconds < 1) {
+            usleep($seconds * 1000000);
+        } else {
+            sleep($seconds);
         }
     }
 
@@ -239,6 +274,8 @@ class RabbitMQ extends AbstractProvider
      */
     public function callbackWrapper(AMQPMessage $msg)
     {
+        $this->gotJob = true;
+
         /** @var AMQPChannel $deliveryChannel */
         $deliveryChannel = $msg->delivery_info['channel'];
 
