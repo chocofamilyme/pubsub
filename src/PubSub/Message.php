@@ -1,10 +1,10 @@
 <?php
-/**
- * @package Chocolife.me
- * @author  Moldabayev Vadim <moldabayev.v@chocolife.kz>
- */
+
+declare(strict_types=1);
 
 namespace Chocofamily\PubSub;
+
+use PhpAmqpLib\Message\AMQPMessage;
 
 interface Message
 {
@@ -13,4 +13,6 @@ interface Message
     public function getHeader(string $key, $default = null);
 
     public function getHeaders();
+
+    public function getMessage(): AMQPMessage;
 }
