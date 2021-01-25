@@ -21,9 +21,10 @@
   ],
   "require": {
     "php": ">= 7.0.0",
+    "ext-json": "*",
+    "ext-phalcon": ">= 3.0.0",
     "chocofamilyme/pathcorrelation": "0.2.*",
-    "php-amqplib/php-amqplib": "^2.10",
-    "ext-phalcon": ">= 3.0.0"
+    "php-amqplib/php-amqplib": "^2.10"
   },
   "require-dev": {
     "codeception/codeception": "^3.0"

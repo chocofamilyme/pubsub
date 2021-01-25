@@ -1,47 +1,60 @@
 <?php
-/**
- * @package Chocolife.me
- * @author  Moldabayev Vadim <moldabayev.v@chocolife.kz>
- */
+
+declare(strict_types=1);
 
 namespace Chocofamily\PubSub\Provider\RabbitMQ\Message;
 
 use PhpAmqpLib\Message\AMQPMessage;
-use Chocofamily\PubSub\Message;
+use Chocofamily\PubSub\InputMessage;
 
-class Input implements Message
+class Input implements InputMessage
 {
     private $headers;
 
     private $body;
 
+    /** @var AMQPMessage */
+    private $message;
 
     public function __construct(AMQPMessage $message)
     {
-        $this->headers                = array_merge(
-            $message->get_properties(),
-            $message->get('application_headers')->getNativeData()
-        );
-        $this->headers['routing_key'] = $message->delivery_info['routing_key'];
-
-        unset($this->headers['application_headers']);
-
-        $this->body = \json_decode($message->body, true);
+        $this->message = $message;
     }
 
     public function getPayload(): array
     {
+        if (null === $this->body) {
+            $this->body = \json_decode($this->message->body, true);
+        }
+
         return $this->body;
     }
 
-
     public function getHeader(string $key, $default = null)
     {
-        return $this->headers[$key] ?? $default;
+        return $this->getHeaders()[$key] ?? $default;
     }
 
-    public function getHeaders()
+    public function getHeaders(): array
     {
+        if (null === $this->headers) {
+            $this->headers = array_merge(
+                $this->message->get_properties(),
+                $this->message->get('application_headers')->getNativeData()
+            );
+
+            $this->headers['routing_key'] = $this->message->getRoutingKey();
+            unset($this->headers['application_headers']);
+        }
+
         return $this->headers;
+    }
+
+    /**
+     * @return AMQPMessage
+     */
+    public function getMessage(): AMQPMessage
+    {
+        return $this->message;
     }
 }
